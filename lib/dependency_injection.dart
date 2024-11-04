@@ -1,6 +1,9 @@
+import 'package:archive_management_system/features/archive/data/repositories/archive_repositories_impl.dart';
+import 'package:archive_management_system/features/archive/domain/repositories/archive_repositories.dart';
 import 'package:get_it/get_it.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'features/archive/data/datasources/archive_remote_data_source.dart';
 import 'features/auth/data/datasources/auth_remote_data_source.dart';
 import 'features/auth/data/repositories/auth_repositories_impl.dart';
 import 'features/auth/domain/repositories/auth_repositories.dart';
@@ -24,4 +27,10 @@ void setup() {
         logoutUseCase: LogoutUseCase(authRepositories: getIt.get()),
       ),
     );
+
+  getIt
+    ..registerLazySingleton<ArchiveRemoteDataSource>(
+        () => ArchiveRemoteDataSourceImpl(supabase: getIt.get()))
+    ..registerLazySingleton<ArchiveRepositories>(
+        () => ArchiveRepositoriesImpl(archiveRemoteDataSource: getIt.get()));
 }

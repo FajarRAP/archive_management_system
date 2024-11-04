@@ -10,25 +10,24 @@ class LendHistoryPage extends StatelessWidget {
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(16),
-        child: Column(children: [
-          TextFormField(
-            decoration: InputDecoration(
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(4),
+        child: Column(
+          children: [
+            TextFormField(
+              decoration: InputDecoration(
+                hintText: 'Cari',
+                prefixIcon: const Icon(Icons.search),
               ),
-              hintText: 'Cari',
-              prefixIcon: const Icon(Icons.search),
             ),
-          ),
-          const SizedBox(height: 16),
-          Expanded(
-            child: ListView.separated(
-                itemBuilder: (context, index) => const LendHistoryItem(),
-                separatorBuilder: (context, index) =>
-                    const SizedBox(height: 12),
-                itemCount: 20),
-          ),
-        ]),
+            const SizedBox(height: 16),
+            Expanded(
+              child: ListView.separated(
+                  itemBuilder: (context, index) => const LendHistoryItem(),
+                  separatorBuilder: (context, index) =>
+                      const SizedBox(height: 12),
+                  itemCount: 20),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -15,9 +15,9 @@ class ArchivePage extends StatelessWidget {
       appBar: AppBar(title: const Text('Arsip')),
       body: ListView.separated(
         itemBuilder: (context, index) => ArchiveItem(index: index),
-        separatorBuilder: (context, index) => const SizedBox(height: 4),
+        separatorBuilder: (context, index) => const SizedBox(height: 12),
         itemCount: 10,
-        padding: const EdgeInsets.all(8),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => context.push(addArchiveRoute),

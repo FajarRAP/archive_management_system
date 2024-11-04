@@ -1,5 +1,5 @@
 String? validate(String? value) {
-  if (value!.isEmpty) {
+  if (value == null || value.isEmpty) {
     return 'Harus diisi';
   }
   return null;

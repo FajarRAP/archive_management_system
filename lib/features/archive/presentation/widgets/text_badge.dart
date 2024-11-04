@@ -17,8 +17,8 @@ class TextBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(6),
         color: (color as MaterialColor).shade100,
       ),
-      width: 100,
       padding: const EdgeInsets.all(6),
+      width: 100,
       child: Text(
         text,
         style: TextStyle(color: color, fontWeight: FontWeight.w500),

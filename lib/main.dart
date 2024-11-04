@@ -42,6 +42,33 @@ class MyApp extends StatelessWidget {
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
             ),
+            enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(
+                  color: Colors.grey.shade300,
+                )),
+            filled: true,
+            fillColor: Colors.grey.shade50,
+            hintStyle: TextStyle(color: Colors.grey.shade400),
+          ),
+          dropdownMenuTheme: DropdownMenuThemeData(
+            inputDecorationTheme: InputDecorationTheme(
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(
+                  color: Colors.grey.shade300,
+                ),
+              ),
+              // focusedBorder: OutlineInputBorder(
+              //   borderRadius: BorderRadius.circular(8),
+              // ),
+              filled: true,
+              fillColor: Colors.grey.shade50,
+              hintStyle: TextStyle(color: Colors.grey.shade400),
+            ),
           ),
           useMaterial3: true,
         ),
@@ -50,151 +77,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
-// class ArsipPage extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text('Cari Arsip'),
-//         backgroundColor: Theme.of(context).primaryColor,
-//       ),
-//       body: Padding(
-//         padding: const EdgeInsets.all(16.0),
-//         child: Column(
-//           children: [
-//             TextField(
-//               decoration: InputDecoration(
-//                 labelText: 'Nomor Arsip',
-//                 border: OutlineInputBorder(),
-//               ),
-//             ),
-//             SizedBox(height: 10),
-//             TextField(
-//               decoration: InputDecoration(
-//                 labelText: 'Kecamatan',
-//                 border: OutlineInputBorder(),
-//               ),
-//             ),
-//             SizedBox(height: 10),
-//             TextField(
-//               decoration: InputDecoration(
-//                 labelText: 'Kelurahan',
-//                 border: OutlineInputBorder(),
-//               ),
-//             ),
-//             SizedBox(height: 10),
-//             ElevatedButton(
-//               onPressed: () {},
-//               child: Text('Cari'),
-//               style: ElevatedButton.styleFrom(
-//                   // primary: Theme.of(context).accentColor,
-//                   ),
-//             ),
-//             SizedBox(height: 20),
-//             Expanded(
-//               child: DataTable(
-//                 columns: [
-//                   DataColumn(label: Text('No Arsip')),
-//                   DataColumn(label: Text('Kecamatan')),
-//                   DataColumn(label: Text('Kelurahan')),
-//                   DataColumn(label: Text('Status')),
-//                 ],
-//                 rows: [
-//                   DataRow(cells: [
-//                     DataCell(Text('123456')),
-//                     DataCell(Text('Pontianak Barat')),
-//                     DataCell(Text('Sungai')),
-//                     DataCell(TextButton(
-//                       onPressed: () {
-//                         Navigator.push(
-//                           context,
-//                           MaterialPageRoute(
-//                               builder: (context) => CrudArsipPage()),
-//                         );
-//                       },
-//                       child: Text('Edit'),
-//                     )),
-//                   ]),
-//                 ],
-//               ),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
-
-// class CrudArsipPage extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text('Data Arsip'),
-//         backgroundColor: Theme.of(context).primaryColor,
-//       ),
-//       body: Padding(
-//         padding: const EdgeInsets.all(16.0),
-//         child: Column(
-//           children: [
-//             TextField(
-//               decoration: InputDecoration(
-//                 labelText: 'Nomor Arsip',
-//                 border: OutlineInputBorder(),
-//               ),
-//             ),
-//             SizedBox(height: 10),
-//             TextField(
-//               decoration: InputDecoration(
-//                 labelText: 'Kecamatan',
-//                 border: OutlineInputBorder(),
-//               ),
-//             ),
-//             SizedBox(height: 10),
-//             TextField(
-//               decoration: InputDecoration(
-//                 labelText: 'Kelurahan',
-//                 border: OutlineInputBorder(),
-//               ),
-//             ),
-//             SizedBox(height: 10),
-//             TextField(
-//               decoration: InputDecoration(
-//                 labelText: 'Status',
-//                 border: OutlineInputBorder(),
-//               ),
-//             ),
-//             SizedBox(height: 20),
-//             Row(
-//               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-//               children: [
-//                 ElevatedButton(
-//                   onPressed: () {},
-//                   child: Text('Edit'),
-//                   style: ElevatedButton.styleFrom(
-//                       // primary: Theme.of(context).accentColor,
-//                       ),
-//                 ),
-//                 ElevatedButton(
-//                   onPressed: () {},
-//                   child: Text('Hapus'),
-//                   style: ElevatedButton.styleFrom(
-//                       // primary: Colors.redAccent,
-//                       ),
-//                 ),
-//                 ElevatedButton(
-//                   onPressed: () {},
-//                   child: Text('Simpan'),
-//                   style: ElevatedButton.styleFrom(
-//                       // primary: Theme.of(context).primaryColor,
-//                       ),
-//                 ),
-//               ],
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }

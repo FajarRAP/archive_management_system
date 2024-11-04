@@ -2,6 +2,15 @@ import 'package:flutter/material.dart';
 
 final rootScaffoldMessengerState = GlobalKey<ScaffoldMessengerState>();
 
+const cardBoxShadow = [
+  BoxShadow(
+    color: Color.fromRGBO(158, 158, 158, .25),
+    spreadRadius: 1,
+    blurRadius: 8,
+    offset: Offset(0, 2),
+  ),
+];
+
 const loginRoute = '/login';
 const homeRoute = '/';
 const archiveRoute = '${homeRoute}archive';
