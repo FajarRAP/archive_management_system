@@ -1,11 +1,11 @@
-import 'package:archive_management_system/dependency_injection.dart';
-import 'package:archive_management_system/features/archive/data/datasources/archive_remote_data_source.dart';
-import 'package:archive_management_system/features/archive/domain/entities/archive_entity.dart';
-import 'package:archive_management_system/features/archive/domain/repositories/archive_repositories.dart';
+import 'package:archive_management_system/core/common/snack_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/common/constants.dart';
 import '../../../../core/helpers/validation.dart';
+import '../../domain/entities/archive_entity.dart';
+import '../cubit/archive_cubit.dart';
 
 class AddArchivePage extends StatefulWidget {
   const AddArchivePage({super.key});
@@ -19,7 +19,7 @@ class _AddArchivePageState extends State<AddArchivePage> {
   final _subdistrictController = TextEditingController();
   final _urbanController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  var _isLoading = false;
+  var archiveStatus = '';
 
   @override
   void dispose() {
@@ -31,8 +31,9 @@ class _AddArchivePageState extends State<AddArchivePage> {
 
   @override
   Widget build(BuildContext context) {
+    final archiveCubit = context.read<ArchiveCubit>();
     final colorScheme = Theme.of(context).colorScheme;
-    const statusOptions = ['Tersedia', 'Dipinjam', 'Hilang'];
+    const statusOptions = [availableStatus, borrowedStatus, lostStatus];
 
     return Scaffold(
       appBar: AppBar(
@@ -59,11 +60,11 @@ class _AddArchivePageState extends State<AddArchivePage> {
               children: [
                 Center(
                   child: Container(
-                    padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: colorScheme.primary.withOpacity(0.25),
                       shape: BoxShape.circle,
                     ),
+                    padding: const EdgeInsets.all(16),
                     child: Icon(
                       Icons.archive_rounded,
                       size: 48,
@@ -98,6 +99,7 @@ class _AddArchivePageState extends State<AddArchivePage> {
                           hintText: 'Masukkan nomor arsip',
                           prefixIcon: Icon(Icons.numbers_rounded),
                         ),
+                        keyboardType: TextInputType.number,
                         validator: validate,
                       ),
                       const SizedBox(height: 20),
@@ -124,7 +126,7 @@ class _AddArchivePageState extends State<AddArchivePage> {
                       ),
                       const SizedBox(height: 20),
                       DropdownButtonFormField<String>(
-                        onChanged: (value) {},
+                        onChanged: (value) => archiveStatus = value ?? '',
                         autovalidateMode: AutovalidateMode.onUserInteraction,
                         items: statusOptions.map((status) {
                           return DropdownMenuItem<String>(
@@ -151,51 +153,68 @@ class _AddArchivePageState extends State<AddArchivePage> {
                 SizedBox(
                   height: 48,
                   width: double.infinity,
-                  child: ElevatedButton(
-                    // onPressed: _isLoading
-                    //     ? null
-                    //     : () async {
-                    //         if (!_formKey.currentState!.validate()) return;
-
-                    //         setState(() => _isLoading = true);
-                    //         await Future.delayed(const Duration(seconds: 2));
-                    //         setState(() => _isLoading = false);
-                    //       },
-                    onPressed: () async {
-                      final data =
-                          await getIt.get<ArchiveRepositories>().insertArchive(
-                                ArchiveEntity(
-                                    archiveNumber: 2,
-                                    subdistrict: 'Kawali',
-                                    urban: 'Linggapura',
-                                    status: 'Tersedia')
-                              );
-                      print(data);
+                  child: BlocConsumer<ArchiveCubit, ArchiveState>(
+                    buildWhen: (previous, current) => current is InsertArchive,
+                    listener: (context, state) {
+                      if (state is InsertArchiveError) {
+                        return showSnackBar(message: state.message);
+                      }
+                      if (state is InsertArchiveLoaded) {
+                        return showSnackBar(message: state.message);
+                      }
                     },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: colorScheme.primary,
-                      foregroundColor: Colors.white,
-                      elevation: 2,
-                    ),
-                    child: _isLoading
-                        ? CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation(Colors.white),
-                          )
-                        : Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: const [
-                              Icon(Icons.add_rounded),
-                              SizedBox(width: 8),
-                              Text(
-                                'Tambah Arsip',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  letterSpacing: 1,
+                    builder: (context, state) {
+                      return ElevatedButton(
+                        onPressed: (state is InsertArchiveLoading)
+                            ? null
+                            : () async {
+                                if (!_formKey.currentState!.validate()) return;
+
+                                await archiveCubit.insertArchive(
+                                  archive: ArchiveEntity(
+                                    archiveNumber: int.parse(
+                                        _archiveController.text.trim()),
+                                    subdistrict:
+                                        _subdistrictController.text.trim(),
+                                    urban: _urbanController.text.trim(),
+                                    status: archiveStatus,
+                                  ),
+                                );
+                              },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: colorScheme.primary,
+                          foregroundColor: Colors.white,
+                          elevation: 2,
+                        ),
+                        child: BlocBuilder<ArchiveCubit, ArchiveState>(
+                          builder: (context, state) {
+                            if (state is InsertArchiveLoading) {
+                              return const CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor:
+                                    AlwaysStoppedAnimation(Colors.white),
+                              );
+                            }
+
+                            return Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: const [
+                                Icon(Icons.add_rounded),
+                                SizedBox(width: 8),
+                                Text(
+                                  'Tambah Arsip',
+                                  style: TextStyle(
+                                    letterSpacing: 1,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
+                              ],
+                            );
+                          },
+                        ),
+                      );
+                    },
                   ),
                 ),
               ],

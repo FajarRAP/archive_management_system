@@ -1,5 +1,8 @@
 import 'package:archive_management_system/features/archive/data/repositories/archive_repositories_impl.dart';
 import 'package:archive_management_system/features/archive/domain/repositories/archive_repositories.dart';
+import 'package:archive_management_system/features/archive/domain/usecases/get_archive_use_case.dart';
+import 'package:archive_management_system/features/archive/domain/usecases/insert_archive_use_case.dart';
+import 'package:archive_management_system/features/archive/presentation/cubit/archive_cubit.dart';
 import 'package:get_it/get_it.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -32,5 +35,12 @@ void setup() {
     ..registerLazySingleton<ArchiveRemoteDataSource>(
         () => ArchiveRemoteDataSourceImpl(supabase: getIt.get()))
     ..registerLazySingleton<ArchiveRepositories>(
-        () => ArchiveRepositoriesImpl(archiveRemoteDataSource: getIt.get()));
+        () => ArchiveRepositoriesImpl(archiveRemoteDataSource: getIt.get()))
+    ..registerLazySingleton<ArchiveCubit>(
+      () => ArchiveCubit(
+        getArchiveUseCase: GetArchiveUseCase(archiveRepositories: getIt.get()),
+        insertArchiveUseCase:
+            InsertArchiveUseCase(archiveRepositories: getIt.get()),
+      ),
+    );
 }

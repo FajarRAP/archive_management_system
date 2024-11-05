@@ -3,9 +3,15 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/common/constants.dart';
 import '../../../../core/helpers/validation.dart';
+import '../../domain/entities/archive_entity.dart';
 
 class UpdateDeleteArchivePage extends StatefulWidget {
-  const UpdateDeleteArchivePage({super.key});
+  const UpdateDeleteArchivePage({
+    super.key,
+    required this.archive,
+  });
+
+  final ArchiveEntity archive;
 
   @override
   State<UpdateDeleteArchivePage> createState() =>
@@ -13,11 +19,23 @@ class UpdateDeleteArchivePage extends StatefulWidget {
 }
 
 class _UpdateDeleteArchivePageState extends State<UpdateDeleteArchivePage> {
-  final _archiveController = TextEditingController();
-  final _subdistrictController = TextEditingController();
-  final _urbanController = TextEditingController();
+  late final TextEditingController _archiveController;
+  late final TextEditingController _subdistrictController;
+  late final TextEditingController _urbanController;
+  late String _archiveStatus;
   final _formKey = GlobalKey<FormState>();
   var _isLoading = false;
+
+  @override
+  void initState() {
+    _archiveController =
+        TextEditingController(text: '${widget.archive.archiveNumber}');
+    _subdistrictController =
+        TextEditingController(text: widget.archive.subdistrict);
+    _urbanController = TextEditingController(text: widget.archive.urban);
+    _archiveStatus = widget.archive.status;
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -137,6 +155,7 @@ class _UpdateDeleteArchivePageState extends State<UpdateDeleteArchivePage> {
                           hintText: 'Masukkan nomor arsip',
                           prefixIcon: Icon(Icons.numbers_rounded),
                         ),
+                        readOnly: true,
                         validator: validate,
                       ),
                       const SizedBox(height: 20),
@@ -182,6 +201,7 @@ class _UpdateDeleteArchivePageState extends State<UpdateDeleteArchivePage> {
                           fontWeight: FontWeight.w400,
                         ),
                         validator: validate,
+                        value: _archiveStatus,
                       ),
                     ],
                   ),

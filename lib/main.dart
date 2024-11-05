@@ -1,3 +1,4 @@
+import 'package:archive_management_system/features/archive/presentation/cubit/archive_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -27,6 +28,7 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (context) => getIt.get<AuthCubit>()),
+        BlocProvider(create: (context) => getIt.get<ArchiveCubit>()),
       ],
       child: MaterialApp.router(
         scaffoldMessengerKey: rootScaffoldMessengerState,

@@ -11,6 +11,10 @@ const cardBoxShadow = [
   ),
 ];
 
+const availableStatus = 'Tersedia';
+const borrowedStatus = 'Dipinjam';
+const lostStatus = 'Hilang';
+
 const loginRoute = '/login';
 const homeRoute = '/';
 const archiveRoute = '${homeRoute}archive';

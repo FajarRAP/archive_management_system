@@ -1,3 +1,4 @@
+import 'package:archive_management_system/features/archive/domain/entities/archive_entity.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -7,15 +8,29 @@ import 'text_badge.dart';
 class ArchiveItem extends StatelessWidget {
   const ArchiveItem({
     super.key,
-    required this.index,
+    required this.archive,
   });
 
-  final int index;
+  final ArchiveEntity archive;
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final isEvenIndex = index % 2 == 0;
+    late Widget textBadge;
+
+    switch (archive.status) {
+      case availableStatus:
+        textBadge = TextBadge(color: Colors.green, text: availableStatus);
+        break;
+      case borrowedStatus:
+        textBadge = TextBadge(color: Colors.red, text: borrowedStatus);
+        break;
+      case lostStatus:
+        textBadge = TextBadge(color: Colors.grey, text: lostStatus);
+        break;
+      default:
+    }
+    // final isEvenIndex = index % 2 == 0;
 
     return Container(
       decoration: BoxDecoration(
@@ -48,22 +63,14 @@ class ArchiveItem extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Nomor Arsip: ARS-${index.toString().padLeft(4, '0')}',
+                        'Nomor Arsip: ${archive.archiveNumber}',
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       const SizedBox(height: 4),
-                      isEvenIndex
-                          ? const TextBadge(
-                              text: 'Tersedia',
-                              color: Colors.green,
-                            )
-                          : const TextBadge(
-                              text: 'Habis',
-                              color: Colors.red,
-                            ),
+                      textBadge
                     ],
                   ),
                 ),
@@ -72,7 +79,10 @@ class ArchiveItem extends StatelessWidget {
                   style: IconButton.styleFrom(
                     backgroundColor: colorScheme.primary.withOpacity(0.1),
                   ),
-                  onPressed: () => context.push('$archiveRoute/$index'),
+                  onPressed: () => context.push(
+                    '$archiveRoute/${archive.archiveNumber}',
+                    extra: archive,
+                  ),
                 ),
               ],
             ),
@@ -82,28 +92,29 @@ class ArchiveItem extends StatelessWidget {
             _buildInfoRow(
               icon: Icons.location_city_rounded,
               label: 'Kecamatan',
-              value: 'LOREM',
+              value: archive.subdistrict,
             ),
             const SizedBox(height: 8),
             _buildInfoRow(
               icon: Icons.apartment_rounded,
               label: 'Kelurahan',
-              value: 'IPSUM',
+              value: archive.urban,
             ),
-            const SizedBox(height: 12),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                TextButton.icon(
-                  onPressed: () => context.push('$archiveRoute/$index'),
-                  icon: const Icon(Icons.arrow_forward_rounded),
-                  label: const Text('Lihat Detail'),
-                  style: TextButton.styleFrom(
-                    foregroundColor: colorScheme.primary,
-                  ),
-                ),
-              ],
-            ),
+            // const SizedBox(height: 12),
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.end,
+            //   children: [
+            //     TextButton.icon(
+            //       onPressed: () =>
+            //           context.push('$archiveRoute/${archive.archiveNumber}'),
+            //       icon: const Icon(Icons.arrow_forward_rounded),
+            //       label: const Text('Lihat Detail'),
+            //       style: TextButton.styleFrom(
+            //         foregroundColor: colorScheme.primary,
+            //       ),
+            //     ),
+            //   ],
+            // ),
           ],
         ),
       ),

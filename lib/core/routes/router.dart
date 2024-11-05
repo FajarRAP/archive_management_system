@@ -1,4 +1,5 @@
 import 'package:archive_management_system/core/common/scaffold_with_bottom_nav_bar.dart';
+import 'package:archive_management_system/features/archive/domain/entities/archive_entity.dart';
 import 'package:archive_management_system/features/archive/presentation/pages/lend_history_page.dart';
 import 'package:archive_management_system/features/auth/presentation/pages/profile_page.dart';
 import 'package:go_router/go_router.dart';
@@ -34,8 +35,9 @@ final router = GoRouter(
                   routes: <RouteBase>[
                     GoRoute(
                       path: ':id',
-                      builder: (context, state) =>
-                          const UpdateDeleteArchivePage(),
+                      builder: (context, state) => UpdateDeleteArchivePage(
+                        archive: state.extra as ArchiveEntity,
+                      ),
                     ),
                   ],
                 ),
