@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/common/constants.dart';
+import '../../../../core/common/snack_bar.dart';
 import '../../../../core/helpers/validation.dart';
 import '../../domain/entities/archive_entity.dart';
+import '../cubit/archive_cubit.dart';
 
 class UpdateDeleteArchivePage extends StatefulWidget {
   const UpdateDeleteArchivePage({
@@ -24,7 +27,6 @@ class _UpdateDeleteArchivePageState extends State<UpdateDeleteArchivePage> {
   late final TextEditingController _urbanController;
   late String _archiveStatus;
   final _formKey = GlobalKey<FormState>();
-  var _isLoading = false;
 
   @override
   void initState() {
@@ -47,8 +49,8 @@ class _UpdateDeleteArchivePageState extends State<UpdateDeleteArchivePage> {
 
   @override
   Widget build(BuildContext context) {
+    final archiveCubit = context.read<ArchiveCubit>();
     final colorScheme = Theme.of(context).colorScheme;
-    const statusOptions = ['Tersedia', 'Dipinjam', 'Hilang'];
 
     return Scaffold(
       appBar: AppBar(
@@ -79,13 +81,51 @@ class _UpdateDeleteArchivePageState extends State<UpdateDeleteArchivePage> {
                       style: TextStyle(color: colorScheme.error),
                     ),
                   ),
-                  ElevatedButton(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: colorScheme.error,
-                      foregroundColor: Colors.white,
-                    ),
-                    child: const Text('Hapus'),
+                  BlocConsumer<ArchiveCubit, ArchiveState>(
+                    buildWhen: (previous, current) => current is DeleteArchive,
+                    listener: (context, state) {
+                      if (state is DeleteArchiveError) {
+                        return showSnackBar(message: state.message);
+                      }
+                      if (state is DeleteArchiveLoaded) {
+                        archiveCubit.getArchive();
+                        return showSnackBar(message: state.message);
+                      }
+                    },
+                    builder: (context, state) {
+                      return ElevatedButton(
+                        onPressed: (state is DeleteArchiveLoading)
+                            ? null
+                            : () async {
+                                await archiveCubit.deleteArchive(
+                                  archiveId: '${widget.archive.archiveId}',
+                                );
+
+                                if (!context.mounted) return;
+
+                                context.pushReplacement(archiveRoute);
+                              },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: colorScheme.error,
+                          foregroundColor: Colors.white,
+                        ),
+                        child: BlocBuilder<ArchiveCubit, ArchiveState>(
+                          buildWhen: (previous, current) =>
+                              current is DeleteArchive,
+                          builder: (context, state) {
+                            if (state is DeleteArchiveLoading) {
+                              return CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor:
+                                    AlwaysStoppedAnimation(Colors.white),
+                              );
+                            }
+
+                            return const Text('Hapus');
+                          },
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),
@@ -182,7 +222,7 @@ class _UpdateDeleteArchivePageState extends State<UpdateDeleteArchivePage> {
                       ),
                       const SizedBox(height: 20),
                       DropdownButtonFormField<String>(
-                        onChanged: (value) {},
+                        onChanged: (value) => _archiveStatus = value ?? '',
                         autovalidateMode: AutovalidateMode.onUserInteraction,
                         items: statusOptions.map((status) {
                           return DropdownMenuItem<String>(
@@ -210,40 +250,75 @@ class _UpdateDeleteArchivePageState extends State<UpdateDeleteArchivePage> {
                 SizedBox(
                   height: 48,
                   width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: _isLoading
-                        ? null
-                        : () async {
-                            if (!_formKey.currentState!.validate()) return;
+                  child: BlocConsumer<ArchiveCubit, ArchiveState>(
+                    buildWhen: (previous, current) => current is UpdateArchive,
+                    listener: (context, state) {
+                      if (state is UpdateArchiveError) {
+                        return showSnackBar(message: state.message);
+                      }
+                      if (state is UpdateArchiveLoaded) {
+                        archiveCubit.getArchive();
+                        return showSnackBar(message: state.message);
+                      }
+                    },
+                    builder: (context, state) {
+                      return ElevatedButton(
+                        onPressed: (state is UpdateArchiveLoading)
+                            ? null
+                            : () async {
+                                if (!_formKey.currentState!.validate()) return;
 
-                            setState(() => _isLoading = true);
-                            await Future.delayed(const Duration(seconds: 2));
-                            setState(() => _isLoading = false);
-                          },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: colorScheme.primary,
-                      foregroundColor: Colors.white,
-                      elevation: 2,
-                    ),
-                    child: _isLoading
-                        ? CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation(Colors.white),
-                          )
-                        : Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: const [
-                              Icon(Icons.edit_rounded),
-                              SizedBox(width: 8),
-                              Text(
-                                'Simpan Perubahan',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  letterSpacing: 1,
+                                final archiveNumber =
+                                    int.parse(_archiveController.text.trim());
+                                final subdistrict =
+                                    _subdistrictController.text.trim();
+                                final urban = _urbanController.text.trim();
+                                final archive = ArchiveEntity(
+                                    archiveId: widget.archive.archiveId,
+                                    archiveNumber: archiveNumber,
+                                    subdistrict: subdistrict,
+                                    urban: urban,
+                                    status: _archiveStatus);
+
+                                await archiveCubit.updateArchive(
+                                    archive: archive);
+                              },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: colorScheme.primary,
+                          elevation: 2,
+                          foregroundColor: Colors.white,
+                        ),
+                        child: BlocBuilder<ArchiveCubit, ArchiveState>(
+                          buildWhen: (previous, current) =>
+                              current is UpdateArchive,
+                          builder: (context, state) {
+                            if (state is UpdateArchiveLoading) {
+                              return CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor:
+                                    AlwaysStoppedAnimation(Colors.white),
+                              );
+                            }
+
+                            return Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: const [
+                                Icon(Icons.edit_rounded),
+                                SizedBox(width: 8),
+                                Text(
+                                  'Simpan Perubahan',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: 1,
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
+                              ],
+                            );
+                          },
+                        ),
+                      );
+                    },
                   ),
                 ),
               ],

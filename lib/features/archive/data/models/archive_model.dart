@@ -2,6 +2,7 @@ import '../../domain/entities/archive_entity.dart';
 
 class ArchiveModel extends ArchiveEntity {
   const ArchiveModel({
+    super.archiveId,
     required super.archiveNumber,
     required super.subdistrict,
     required super.urban,
@@ -9,12 +10,14 @@ class ArchiveModel extends ArchiveEntity {
   });
 
   factory ArchiveModel.fromJson(Map<String, dynamic> json) => ArchiveModel(
+      archiveId: json['id'],
       archiveNumber: json['no_arsip'],
       subdistrict: json['kecamatan'],
       urban: json['kelurahan'],
       status: json['status']);
 
   factory ArchiveModel.fromEntity(ArchiveEntity archive) => ArchiveModel(
+      archiveId: archive.archiveId,
       archiveNumber: archive.archiveNumber,
       subdistrict: archive.subdistrict,
       urban: archive.urban,

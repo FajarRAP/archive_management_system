@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 final rootScaffoldMessengerState = GlobalKey<ScaffoldMessengerState>();
 
+const statusOptions = [availableStatus, borrowedStatus, lostStatus];
+
 const cardBoxShadow = [
   BoxShadow(
     color: Color.fromRGBO(158, 158, 158, .25),

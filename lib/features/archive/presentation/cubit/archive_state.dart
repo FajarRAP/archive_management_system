@@ -6,7 +6,12 @@ sealed class ArchiveState {}
 final class ArchiveInitial extends ArchiveState {}
 
 class GetArchive extends ArchiveState {}
+
 class InsertArchive extends ArchiveState {}
+
+class UpdateArchive extends ArchiveState {}
+
+class DeleteArchive extends ArchiveState {}
 
 class GetArchiveLoading extends GetArchive {}
 
@@ -34,4 +39,31 @@ class InsertArchiveError extends InsertArchive {
   final String message;
 
   InsertArchiveError({required this.message});
+}
+
+class UpdateArchiveLoading extends UpdateArchive {}
+
+class UpdateArchiveLoaded extends UpdateArchive {
+  final String message;
+
+  UpdateArchiveLoaded(this.message);
+}
+
+class UpdateArchiveError extends UpdateArchive {
+  final String message;
+
+  UpdateArchiveError({required this.message});
+}
+class DeleteArchiveLoading extends DeleteArchive {}
+
+class DeleteArchiveLoaded extends DeleteArchive {
+  final String message;
+
+  DeleteArchiveLoaded(this.message);
+}
+
+class DeleteArchiveError extends DeleteArchive {
+  final String message;
+
+  DeleteArchiveError({required this.message});
 }

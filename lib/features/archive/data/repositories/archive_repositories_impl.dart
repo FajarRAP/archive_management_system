@@ -7,6 +7,9 @@ import '../../domain/repositories/archive_repositories.dart';
 import '../datasources/archive_remote_data_source.dart';
 import '../models/archive_model.dart';
 
+ArchiveModel mapArchive(Map<String, dynamic> archive) =>
+    ArchiveModel.fromJson(archive);
+
 class ArchiveRepositoriesImpl extends ArchiveRepositories {
   final ArchiveRemoteDataSource archiveRemoteDataSource;
 
@@ -16,8 +19,7 @@ class ArchiveRepositoriesImpl extends ArchiveRepositories {
   Future<Either<Failure, List<ArchiveEntity>>> getArchive() async {
     try {
       final result = await archiveRemoteDataSource.getArchive();
-      return Right(
-          result.map((archive) => ArchiveModel.fromJson(archive)).toList());
+      return Right(result.map(mapArchive).toList());
     } catch (e) {
       return Left(Failure());
     }
@@ -29,8 +31,7 @@ class ArchiveRepositoriesImpl extends ArchiveRepositories {
     try {
       final result = await archiveRemoteDataSource
           .insertArchive(ArchiveModel.fromEntity(archive));
-      final archives =
-          result.map((archive) => ArchiveModel.fromJson(archive)).toList();
+      final archives = result.map(mapArchive).toList();
       return Right(archives.first);
     } on PostgrestException catch (pe) {
       switch (pe.code) {
@@ -39,6 +40,30 @@ class ArchiveRepositoriesImpl extends ArchiveRepositories {
         default:
           return Left(Failure());
       }
+    } catch (e) {
+      return Left(Failure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, ArchiveEntity>> deleteArchive(String archiveId) async {
+    try {
+      final result = await archiveRemoteDataSource.deleteArchive(archiveId);
+      final archives = result.map(mapArchive).toList();
+      return Right(archives.first);
+    } catch (e) {
+      return Left(Failure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, ArchiveEntity>> updateArchive(
+      ArchiveEntity archive) async {
+    try {
+      final result = await archiveRemoteDataSource
+          .updateArchive(ArchiveModel.fromEntity(archive));
+      final archives = result.map(mapArchive).toList();
+      return Right(archives.first);
     } catch (e) {
       return Left(Failure());
     }

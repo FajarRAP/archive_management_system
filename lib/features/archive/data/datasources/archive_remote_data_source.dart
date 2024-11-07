@@ -5,6 +5,8 @@ import '../models/archive_model.dart';
 abstract class ArchiveRemoteDataSource {
   Future<List<Map<String, dynamic>>> getArchive();
   Future<List<Map<String, dynamic>>> insertArchive(ArchiveModel archive);
+  Future<List<Map<String, dynamic>>> updateArchive(ArchiveModel archive);
+  Future<List<Map<String, dynamic>>> deleteArchive(String archiveId);
 }
 
 class ArchiveRemoteDataSourceImpl extends ArchiveRemoteDataSource {
@@ -20,5 +22,27 @@ class ArchiveRemoteDataSourceImpl extends ArchiveRemoteDataSource {
   @override
   Future<List<Map<String, dynamic>>> insertArchive(ArchiveModel archive) async {
     return await supabase.from('archives').insert(archive.toJson()).select();
+  }
+
+  @override
+  Future<List<Map<String, dynamic>>> updateArchive(ArchiveModel archive) async {
+    return await supabase
+        .from('archives')
+        .update({
+          'kecamatan': archive.subdistrict,
+          'kelurahan': archive.urban,
+          'status': archive.status
+        })
+        .eq('id', archive.archiveId!)
+        .select();
+  }
+
+  @override
+  Future<List<Map<String, dynamic>>> deleteArchive(String archiveId) async {
+    return await supabase
+        .from('archives')
+        .delete()
+        .eq('id', archiveId)
+        .select();
   }
 }

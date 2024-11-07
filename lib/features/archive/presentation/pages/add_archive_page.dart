@@ -33,7 +33,6 @@ class _AddArchivePageState extends State<AddArchivePage> {
   Widget build(BuildContext context) {
     final archiveCubit = context.read<ArchiveCubit>();
     final colorScheme = Theme.of(context).colorScheme;
-    const statusOptions = [availableStatus, borrowedStatus, lostStatus];
 
     return Scaffold(
       appBar: AppBar(
@@ -160,6 +159,7 @@ class _AddArchivePageState extends State<AddArchivePage> {
                         return showSnackBar(message: state.message);
                       }
                       if (state is InsertArchiveLoaded) {
+                        archiveCubit.getArchive();
                         return showSnackBar(message: state.message);
                       }
                     },
@@ -169,17 +169,18 @@ class _AddArchivePageState extends State<AddArchivePage> {
                             ? null
                             : () async {
                                 if (!_formKey.currentState!.validate()) return;
-
+                                final archiveNumber =
+                                    int.parse(_archiveController.text.trim());
+                                final subdistrict =
+                                    _subdistrictController.text.trim();
+                                final urban = _urbanController.text.trim();
+                                final archive = ArchiveEntity(
+                                    archiveNumber: archiveNumber,
+                                    subdistrict: subdistrict,
+                                    urban: urban,
+                                    status: archiveStatus);
                                 await archiveCubit.insertArchive(
-                                  archive: ArchiveEntity(
-                                    archiveNumber: int.parse(
-                                        _archiveController.text.trim()),
-                                    subdistrict:
-                                        _subdistrictController.text.trim(),
-                                    urban: _urbanController.text.trim(),
-                                    status: archiveStatus,
-                                  ),
-                                );
+                                    archive: archive);
                               },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: colorScheme.primary,
