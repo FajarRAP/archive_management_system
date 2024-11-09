@@ -16,9 +16,9 @@ class DeleteArchive extends ArchiveState {}
 class GetArchiveLoading extends GetArchive {}
 
 class GetArchiveLoaded extends GetArchive {
-  final List<ArchiveEntity> archive;
+  final List<ArchiveEntity> archives;
 
-  GetArchiveLoaded(this.archive);
+  GetArchiveLoaded(this.archives);
 }
 
 class GetArchiveError extends GetArchive {
@@ -54,6 +54,7 @@ class UpdateArchiveError extends UpdateArchive {
 
   UpdateArchiveError({required this.message});
 }
+
 class DeleteArchiveLoading extends DeleteArchive {}
 
 class DeleteArchiveLoaded extends DeleteArchive {

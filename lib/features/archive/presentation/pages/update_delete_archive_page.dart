@@ -98,7 +98,7 @@ class _UpdateDeleteArchivePageState extends State<UpdateDeleteArchivePage> {
                             ? null
                             : () async {
                                 await archiveCubit.deleteArchive(
-                                  archiveId: '${widget.archive.archiveId}',
+                                  archiveId: '${widget.archive.archiveNumber}',
                                 );
 
                                 if (!context.mounted) return;
@@ -268,14 +268,14 @@ class _UpdateDeleteArchivePageState extends State<UpdateDeleteArchivePage> {
                             : () async {
                                 if (!_formKey.currentState!.validate()) return;
 
-                                final archiveNumber =
-                                    int.parse(_archiveController.text.trim());
+                                // final archiveNumber =
+                                //     int.parse(_archiveController.text.trim());
                                 final subdistrict =
                                     _subdistrictController.text.trim();
                                 final urban = _urbanController.text.trim();
                                 final archive = ArchiveEntity(
-                                    archiveId: widget.archive.archiveId,
-                                    archiveNumber: archiveNumber,
+                                    // archiveId: widget.archive.archiveId,
+                                    archiveNumber: widget.archive.archiveNumber,
                                     subdistrict: subdistrict,
                                     urban: urban,
                                     status: _archiveStatus);

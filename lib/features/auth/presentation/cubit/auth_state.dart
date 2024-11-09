@@ -27,3 +27,15 @@ class LogoutError extends AuthState {
 
   LogoutError(this.message);
 }
+
+class ProfileLoading extends AuthState {}
+class ProfileLoaded extends AuthState {
+  final Map<String, dynamic> user;
+
+  ProfileLoaded(this.user);
+}
+class ProfileError extends AuthState {
+  final String message;
+
+  ProfileError(this.message);
+}

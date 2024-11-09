@@ -28,12 +28,8 @@ class ArchiveRemoteDataSourceImpl extends ArchiveRemoteDataSource {
   Future<List<Map<String, dynamic>>> updateArchive(ArchiveModel archive) async {
     return await supabase
         .from('archives')
-        .update({
-          'kecamatan': archive.subdistrict,
-          'kelurahan': archive.urban,
-          'status': archive.status
-        })
-        .eq('id', archive.archiveId!)
+        .update(archive.toJson())
+        .eq('id', archive.archiveNumber!)
         .select();
   }
 

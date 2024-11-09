@@ -22,23 +22,23 @@ class ArchivePage extends StatelessWidget {
           if (state is GetArchiveLoading) {
             return const Center(child: CircularProgressIndicator());
           }
-
+      
           if (state is GetArchiveLoaded) {
             return RefreshIndicator(
               onRefresh: context.read<ArchiveCubit>().getArchive,
               displacement: 10,
               child: ListView.separated(
                 itemBuilder: (context, index) =>
-                    ArchiveItem(archive: state.archive[index]),
+                    ArchiveItem(archive: state.archives[index]),
                 separatorBuilder: (context, index) =>
                     const SizedBox(height: 12),
-                itemCount: state.archive.length,
+                itemCount: state.archives.length,
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               ),
             );
           }
-
+      
           return const SizedBox();
         },
       ),
@@ -50,3 +50,4 @@ class ArchivePage extends StatelessWidget {
     );
   }
 }
+

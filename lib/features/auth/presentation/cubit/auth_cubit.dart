@@ -1,6 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 
+import '../../domain/entities/user_entity.dart';
+import '../../domain/usecases/get_current_user_use_case.dart';
 import '../../domain/usecases/login_use_case.dart';
 import '../../domain/usecases/logout_use_case.dart';
 
@@ -10,10 +12,14 @@ class AuthCubit extends Cubit<AuthState> {
   AuthCubit({
     required this.loginUseCase,
     required this.logoutUseCase,
+    required this.getUserUseCase,
   }) : super(AuthInitial());
 
   final LoginUseCase loginUseCase;
   final LogoutUseCase logoutUseCase;
+  final GetCurrentUserUseCase getUserUseCase;
+
+  late UserEntity? user;
 
   Future<void> login({required String email, required String password}) async {
     emit(LoginLoading());
@@ -35,6 +41,17 @@ class AuthCubit extends Cubit<AuthState> {
     result.fold(
       (l) => emit(LogoutError(l.message)),
       (r) => emit(LogoutLoaded(r)),
+    );
+  }
+
+  Future<void> getCurrentUser() async {
+    emit(ProfileLoading());
+
+    final result = await getUserUseCase('${user?.id}');
+
+    result.fold(
+      (l) => emit(ProfileError(l.message)),
+      (r) => emit(ProfileLoaded(r)),
     );
   }
 }

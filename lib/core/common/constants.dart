@@ -21,8 +21,52 @@ const loginRoute = '/login';
 const homeRoute = '/';
 const archiveRoute = '${homeRoute}archive';
 const addArchiveRoute = '${homeRoute}add-archive';
+const borrowArchiveRoute = '${homeRoute}borrow-archive';
 const returnArchiveRoute = '/return-archive';
 
 const reportRoute = '${homeRoute}report';
 
 const profileRoute = '${homeRoute}profile';
+
+const subdistrictsAndUrban = {
+  'Pontianak Barat': [
+    'Pal Lima',
+    'Sungai Beliung',
+    'Sungaijawi Dalam',
+    'Sungaijawi Luar'
+  ],
+  'Pontianak Kota': [
+    'Daratsekip',
+    'Mariana',
+    'Sungaibangkong',
+    'Sungaijawi Tengah',
+  ],
+  'Pontianak Selatan': [
+    'Akcaya',
+    'Benuamelayu Darat',
+    'Benuamelayu Laut',
+    'Kotabaru',
+    'Parittokaya',
+  ],
+  'Pontianak Tenggara': [
+    'Bangka Belitung Darat',
+    'Bangka Belitung Laut',
+    'Bansir Darat',
+    'Bansir Laut',
+  ],
+  'Pontianak Timur': [
+    'Banjar Serasan',
+    'Dalambugis',
+    'Paritmayor',
+    'Saigon',
+    'Tambelansampit',
+    'Tanjunghulu',
+    'Tanjunghilir',
+  ],
+  'Pontianak Utara': [
+    'Batulayang',
+    'Siantan Hilir',
+    'Siantan Hulu',
+    'Siantan Tengah',
+  ],
+};

@@ -36,4 +36,15 @@ class AuthRepositoriesImpl extends AuthRepositories {
       return Left(Failure(message: '$e'));
     }
   }
+
+  @override
+  Future<Either<Failure, Map<String, dynamic>>> getCurrentUser(String userId) async {
+    try {
+      final datas = await authRemoteDataSource.getCurrentUser(userId);
+      if (datas.isEmpty) return Right({});
+      return Right(datas.first);
+    } catch (e) {
+      return Left(Failure(message: '$e'));
+    }
+  }
 }

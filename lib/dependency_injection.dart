@@ -1,3 +1,4 @@
+import 'package:archive_management_system/features/auth/domain/usecases/get_current_user_use_case.dart';
 import 'package:get_it/get_it.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -30,6 +31,7 @@ void setup() {
       () => AuthCubit(
         loginUseCase: LoginUseCase(authRepositories: getIt.get()),
         logoutUseCase: LogoutUseCase(authRepositories: getIt.get()),
+        getUserUseCase: GetCurrentUserUseCase(authRepositories: getIt.get()),
       ),
     );
 

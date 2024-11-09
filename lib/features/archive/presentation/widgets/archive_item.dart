@@ -1,8 +1,10 @@
-import 'package:archive_management_system/features/archive/domain/entities/archive_entity.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/common/constants.dart';
+import '../../../../dependency_injection.dart';
+import '../../domain/entities/archive_entity.dart';
 import 'text_badge.dart';
 
 class ArchiveItem extends StatelessWidget {
@@ -16,6 +18,7 @@ class ArchiveItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final user = getIt.get<SupabaseClient>().auth.currentUser;
     late Widget textBadge;
 
     switch (archive.status) {
@@ -30,7 +33,6 @@ class ArchiveItem extends StatelessWidget {
         break;
       default:
     }
-    // final isEvenIndex = index % 2 == 0;
 
     return Container(
       decoration: BoxDecoration(
@@ -74,16 +76,17 @@ class ArchiveItem extends StatelessWidget {
                     ],
                   ),
                 ),
-                IconButton(
-                  icon: Icon(Icons.edit_rounded, color: colorScheme.primary),
-                  style: IconButton.styleFrom(
-                    backgroundColor: colorScheme.primary.withOpacity(0.1),
+                if (user?.userMetadata?['is_admin'])
+                  IconButton(
+                    icon: Icon(Icons.edit_rounded, color: colorScheme.primary),
+                    style: IconButton.styleFrom(
+                      backgroundColor: colorScheme.primary.withOpacity(0.1),
+                    ),
+                    onPressed: () => context.push(
+                      '$archiveRoute/${archive.archiveNumber}',
+                      extra: archive,
+                    ),
                   ),
-                  onPressed: () => context.push(
-                    '$archiveRoute/${archive.archiveNumber}',
-                    extra: archive,
-                  ),
-                ),
               ],
             ),
             const SizedBox(height: 16),
@@ -100,21 +103,22 @@ class ArchiveItem extends StatelessWidget {
               label: 'Kelurahan',
               value: archive.urban,
             ),
-            // const SizedBox(height: 12),
-            // Row(
-            //   mainAxisAlignment: MainAxisAlignment.end,
-            //   children: [
-            //     TextButton.icon(
-            //       onPressed: () =>
-            //           context.push('$archiveRoute/${archive.archiveNumber}'),
-            //       icon: const Icon(Icons.arrow_forward_rounded),
-            //       label: const Text('Lihat Detail'),
-            //       style: TextButton.styleFrom(
-            //         foregroundColor: colorScheme.primary,
-            //       ),
-            //     ),
-            //   ],
-            // ),
+            const SizedBox(height: 12),
+            if (!user?.userMetadata?['is_admin'])
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton.icon(
+                    onPressed: () =>
+                        context.push(borrowArchiveRoute, extra: archive),
+                    icon: const Icon(Icons.arrow_forward_rounded),
+                    label: const Text('Pinjam Arsip'),
+                    style: TextButton.styleFrom(
+                      foregroundColor: colorScheme.primary,
+                    ),
+                  ),
+                ],
+              ),
           ],
         ),
       ),

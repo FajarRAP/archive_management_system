@@ -15,7 +15,6 @@ class AddArchivePage extends StatefulWidget {
 }
 
 class _AddArchivePageState extends State<AddArchivePage> {
-  final _archiveController = TextEditingController();
   final _subdistrictController = TextEditingController();
   final _urbanController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
@@ -23,7 +22,6 @@ class _AddArchivePageState extends State<AddArchivePage> {
 
   @override
   void dispose() {
-    _archiveController.dispose();
     _subdistrictController.dispose();
     _urbanController.dispose();
     super.dispose();
@@ -88,18 +86,6 @@ class _AddArchivePageState extends State<AddArchivePage> {
                           fontSize: 18,
                           fontWeight: FontWeight.w500,
                         ),
-                      ),
-                      const SizedBox(height: 20),
-                      TextFormField(
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                        controller: _archiveController,
-                        decoration: InputDecoration(
-                          labelText: 'Nomor Arsip',
-                          hintText: 'Masukkan nomor arsip',
-                          prefixIcon: Icon(Icons.numbers_rounded),
-                        ),
-                        keyboardType: TextInputType.number,
-                        validator: validate,
                       ),
                       const SizedBox(height: 20),
                       TextFormField(
@@ -169,13 +155,13 @@ class _AddArchivePageState extends State<AddArchivePage> {
                             ? null
                             : () async {
                                 if (!_formKey.currentState!.validate()) return;
-                                final archiveNumber =
-                                    int.parse(_archiveController.text.trim());
+                                // final archiveNumber =
+                                //     int.parse(_archiveController.text.trim());
                                 final subdistrict =
                                     _subdistrictController.text.trim();
                                 final urban = _urbanController.text.trim();
                                 final archive = ArchiveEntity(
-                                    archiveNumber: archiveNumber,
+                                    // archiveNumber: archiveNumber,
                                     subdistrict: subdistrict,
                                     urban: urban,
                                     status: archiveStatus);
