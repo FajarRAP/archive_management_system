@@ -1,3 +1,4 @@
+import 'package:archive_management_system/features/archive/domain/usecases/borrow_archive_use_case.dart';
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 
@@ -15,12 +16,14 @@ class ArchiveCubit extends Cubit<ArchiveState> {
     required this.insertArchiveUseCase,
     required this.updateArchiveUseCase,
     required this.deleteArchiveUseCase,
+    required this.borrowArchiveUseCase,
   }) : super(ArchiveInitial());
 
   final GetArchiveUseCase getArchiveUseCase;
   final InsertArchiveUseCase insertArchiveUseCase;
   final UpdateArchiveUseCase updateArchiveUseCase;
   final DeleteArchiveUseCase deleteArchiveUseCase;
+  final BorrowArchiveUseCase borrowArchiveUseCase;
 
   Future<void> getArchive() async {
     emit(GetArchiveLoading());
@@ -62,6 +65,27 @@ class ArchiveCubit extends Cubit<ArchiveState> {
     result.fold(
       (l) => emit(DeleteArchiveError(message: l.message)),
       (r) => emit(DeleteArchiveLoaded('Berhasil menghapus arsip')),
+    );
+  }
+
+  Future<void> borrowArchive({
+    required String archiveId,
+    required String profileId,
+    required String description,
+    required DateTime borrowedDate,
+  }) async {
+    emit(BorrowArchiveLoading());
+    final params = BorrowArchiveUseCaseParams(
+        archiveId: archiveId,
+        profileId: profileId,
+        description: description,
+        borrowedDate: borrowedDate);
+
+    final result = await borrowArchiveUseCase(params);
+
+    result.fold(
+      (l) => emit(BorrowArchiveError(message: l.message)),
+      (r) => emit(BorrowArchiveLoaded('Peminjaman Arsip Berhasil')),
     );
   }
 }

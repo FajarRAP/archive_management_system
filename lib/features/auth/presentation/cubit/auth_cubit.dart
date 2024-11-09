@@ -1,3 +1,4 @@
+import 'package:archive_management_system/features/auth/domain/entities/profile_entity.dart';
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 
@@ -20,6 +21,7 @@ class AuthCubit extends Cubit<AuthState> {
   final GetCurrentUserUseCase getUserUseCase;
 
   late UserEntity? user;
+  late ProfileEntity userProfile;
 
   Future<void> login({required String email, required String password}) async {
     emit(LoginLoading());
@@ -51,7 +53,10 @@ class AuthCubit extends Cubit<AuthState> {
 
     result.fold(
       (l) => emit(ProfileError(l.message)),
-      (r) => emit(ProfileLoaded(r)),
+      (r) {
+        userProfile = r;
+        emit(ProfileLoaded(r));
+      },
     );
   }
 }

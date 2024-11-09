@@ -1,3 +1,5 @@
+import 'package:archive_management_system/features/archive/data/models/archive_loan_model.dart';
+import 'package:archive_management_system/features/archive/domain/entities/archive_loan_entity.dart';
 import 'package:dartz/dartz.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -66,6 +68,19 @@ class ArchiveRepositoriesImpl extends ArchiveRepositories {
       return Right(archives.first);
     } catch (e) {
       return Left(Failure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, ArchiveLoanEntity>> borrowArchive(String archiveId,
+      String profileId, String description, DateTime borrowedDate) async {
+    try {
+      final datas = await archiveRemoteDataSource.borrowArchive(
+          archiveId, profileId, description, borrowedDate);
+
+      return Right(ArchiveLoanModel.fromJson(datas.first));
+    } catch (e) {
+      return Left(Failure(message: '$e'));
     }
   }
 }

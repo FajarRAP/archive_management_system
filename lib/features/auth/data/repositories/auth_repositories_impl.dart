@@ -1,9 +1,11 @@
 import 'package:dartz/dartz.dart';
 
 import '../../../../core/common/failure.dart';
+import '../../domain/entities/profile_entity.dart';
 import '../../domain/entities/user_entity.dart';
 import '../../domain/repositories/auth_repositories.dart';
 import '../datasources/auth_remote_data_source.dart';
+import '../models/profile_model.dart';
 import '../models/user_model.dart';
 
 class AuthRepositoriesImpl extends AuthRepositories {
@@ -38,11 +40,11 @@ class AuthRepositoriesImpl extends AuthRepositories {
   }
 
   @override
-  Future<Either<Failure, Map<String, dynamic>>> getCurrentUser(String userId) async {
+  Future<Either<Failure, ProfileEntity>> getCurrentUser(String userId) async {
     try {
       final datas = await authRemoteDataSource.getCurrentUser(userId);
-      if (datas.isEmpty) return Right({});
-      return Right(datas.first);
+
+      return Right(ProfileModel.fromJson(datas.first));
     } catch (e) {
       return Left(Failure(message: '$e'));
     }

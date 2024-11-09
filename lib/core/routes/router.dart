@@ -6,7 +6,7 @@ import '../../features/archive/domain/entities/archive_entity.dart';
 import '../../features/archive/presentation/pages/add_archive_page.dart';
 import '../../features/archive/presentation/pages/archive_page.dart';
 import '../../features/archive/presentation/pages/home_page.dart';
-import '../../features/archive/presentation/pages/lend_archive_page.dart';
+import '../../features/archive/presentation/pages/borrow_archive_page.dart';
 import '../../features/archive/presentation/pages/lend_history_page.dart';
 import '../../features/archive/presentation/pages/return_archive_page.dart';
 import '../../features/archive/presentation/pages/update_delete_archive_page.dart';

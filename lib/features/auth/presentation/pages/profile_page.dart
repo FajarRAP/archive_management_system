@@ -46,7 +46,7 @@ class ProfilePage extends StatelessWidget {
                       ),
                       const SizedBox(height: 12),
                       Text(
-                        '${state.user['nama'] ?? authCubit.user?.userMetadata?['name']}',
+                        state.user.name,
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 20,
@@ -54,7 +54,7 @@ class ProfilePage extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        '${state.user['jabatan'] ?? authCubit.user?.userMetadata?['job_title']}',
+                        state.user.jobTitle,
                         style: TextStyle(fontSize: 16, color: Colors.white70),
                       ),
                     ],
@@ -80,8 +80,7 @@ class ProfilePage extends StatelessWidget {
                                 'Nama',
                                 style: TextStyle(fontWeight: FontWeight.bold),
                               ),
-                              subtitle: Text(
-                                  '${state.user['nama'] ?? authCubit.user?.userMetadata?['name']}'),
+                              subtitle: Text(state.user.name),
                             ),
                             const Divider(),
                             ListTile(
@@ -93,8 +92,7 @@ class ProfilePage extends StatelessWidget {
                                 'NIP',
                                 style: TextStyle(fontWeight: FontWeight.bold),
                               ),
-                              subtitle: Text(
-                                  '${state.user['nik'] ?? authCubit.user?.userMetadata?['employee_id']}'),
+                              subtitle: Text(state.user.employeeId),
                             ),
                             const Divider(),
                             ListTile(
@@ -104,8 +102,7 @@ class ProfilePage extends StatelessWidget {
                                 'Jabatan',
                                 style: TextStyle(fontWeight: FontWeight.bold),
                               ),
-                              subtitle: Text(
-                                  '${state.user['jabatan'] ?? authCubit.user?.userMetadata?['job_title']}'),
+                              subtitle: Text(state.user.jobTitle),
                             ),
                             const Divider(),
                             const SizedBox(height: 24),

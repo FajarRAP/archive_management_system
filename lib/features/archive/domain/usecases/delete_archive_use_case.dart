@@ -1,8 +1,9 @@
-import 'package:archive_management_system/core/common/failure.dart';
-import 'package:archive_management_system/core/common/use_cases.dart';
-import 'package:archive_management_system/features/archive/domain/entities/archive_entity.dart';
-import 'package:archive_management_system/features/archive/domain/repositories/archive_repositories.dart';
 import 'package:dartz/dartz.dart';
+
+import '../../../../core/common/failure.dart';
+import '../../../../core/common/use_cases.dart';
+import '../entities/archive_entity.dart';
+import '../repositories/archive_repositories.dart';
 
 class DeleteArchiveUseCase
     implements AsyncUseCaseWithParams<ArchiveEntity, String> {

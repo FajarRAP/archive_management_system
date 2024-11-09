@@ -1,3 +1,4 @@
+import 'package:archive_management_system/features/archive/presentation/widgets/archive_item_info.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -92,13 +93,13 @@ class ArchiveItem extends StatelessWidget {
             const SizedBox(height: 16),
             const Divider(),
             const SizedBox(height: 12),
-            _buildInfoRow(
+            ArchiveItemInfo(
               icon: Icons.location_city_rounded,
               label: 'Kecamatan',
               value: archive.subdistrict,
             ),
             const SizedBox(height: 8),
-            _buildInfoRow(
+            ArchiveItemInfo(
               icon: Icons.apartment_rounded,
               label: 'Kelurahan',
               value: archive.urban,

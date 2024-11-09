@@ -30,7 +30,7 @@ class LogoutError extends AuthState {
 
 class ProfileLoading extends AuthState {}
 class ProfileLoaded extends AuthState {
-  final Map<String, dynamic> user;
+  final ProfileEntity user;
 
   ProfileLoaded(this.user);
 }

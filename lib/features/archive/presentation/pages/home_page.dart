@@ -20,16 +20,22 @@ class HomePage extends StatelessWidget {
     final user = getIt.get<s.SupabaseClient>().auth.currentUser;
     authCubit.user = UserModel.fromUser(user!);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Hai, ${authCubit.user?.userMetadata?['name']}'),
-      ),
-      body: _buildBody(),
+    return BlocBuilder<AuthCubit, AuthState>(
+      bloc: authCubit..getCurrentUser(),
+      builder: (context, state) {
+        return Scaffold(
+          appBar: AppBar(
+            title: Text('Hai, ${authCubit.user?.userMetadata?['name']}'),
+          ),
+          body: _buildBody(),
+        );
+      },
     );
   }
 
   Widget _buildBody() {
     final user = getIt.get<s.SupabaseClient>().auth.currentUser;
+
     if (user?.userMetadata?['is_admin']) return _AdminPage();
     return _UserPage();
   }
@@ -41,7 +47,7 @@ class _AdminPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(16),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.stretch,

@@ -13,6 +13,8 @@ class UpdateArchive extends ArchiveState {}
 
 class DeleteArchive extends ArchiveState {}
 
+class BorrowArchive extends ArchiveState {}
+
 class GetArchiveLoading extends GetArchive {}
 
 class GetArchiveLoaded extends GetArchive {
@@ -67,4 +69,18 @@ class DeleteArchiveError extends DeleteArchive {
   final String message;
 
   DeleteArchiveError({required this.message});
+}
+
+class BorrowArchiveLoading extends BorrowArchive {}
+
+class BorrowArchiveLoaded extends BorrowArchive {
+  final String message;
+
+  BorrowArchiveLoaded(this.message);
+}
+
+class BorrowArchiveError extends BorrowArchive {
+  final String message;
+
+  BorrowArchiveError({required this.message});
 }

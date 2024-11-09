@@ -1,9 +1,14 @@
-import 'package:archive_management_system/core/common/constants.dart';
-import 'package:archive_management_system/core/helpers/validation.dart';
+import 'package:archive_management_system/core/common/snack_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../core/common/constants.dart';
+import '../../../../core/helpers/validation.dart';
+import '../../../auth/presentation/cubit/auth_cubit.dart';
 import '../../domain/entities/archive_entity.dart';
+import '../cubit/archive_cubit.dart';
+import '../widgets/archive_item_info.dart';
 
 class BorrowArchivePage extends StatefulWidget {
   const BorrowArchivePage({
@@ -20,12 +25,13 @@ class BorrowArchivePage extends StatefulWidget {
 class _BorrowArchivePageState extends State<BorrowArchivePage> {
   final dateFormat = DateFormat('dd MMMM yyyy');
   final _formKey = GlobalKey<FormState>();
-  late final TextEditingController _purposeController;
+  late final TextEditingController _descriptionController;
   late final TextEditingController _datePickerController;
+  var datePicked = DateTime.now();
 
   @override
   void initState() {
-    _purposeController = TextEditingController();
+    _descriptionController = TextEditingController();
     _datePickerController = TextEditingController(
       text: dateFormat.format(DateTime.now()),
     );
@@ -34,13 +40,15 @@ class _BorrowArchivePageState extends State<BorrowArchivePage> {
 
   @override
   void dispose() {
-    _purposeController.dispose();
+    _descriptionController.dispose();
     _datePickerController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final authCubit = context.read<AuthCubit>();
+    final archiveCubit = context.read<ArchiveCubit>();
     final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
@@ -61,7 +69,7 @@ class _BorrowArchivePageState extends State<BorrowArchivePage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Detail Arsip',
+                    'Informasi Arsip',
                     style: TextStyle(
                       color: colorScheme.primary,
                       fontSize: 18,
@@ -69,19 +77,19 @@ class _BorrowArchivePageState extends State<BorrowArchivePage> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  _ItemInfo(
+                  ArchiveItemInfo(
                     icon: Icons.numbers_rounded,
                     label: 'Nomor Arsip',
                     value: '${widget.archive.archiveNumber}',
                   ),
                   const SizedBox(height: 8),
-                  _ItemInfo(
+                  ArchiveItemInfo(
                     icon: Icons.location_city_rounded,
                     label: 'Kecamatan',
                     value: widget.archive.subdistrict,
                   ),
                   const SizedBox(height: 8),
-                  _ItemInfo(
+                  ArchiveItemInfo(
                     icon: Icons.apartment_rounded,
                     label: 'Kelurahan',
                     value: widget.archive.urban,
@@ -92,11 +100,45 @@ class _BorrowArchivePageState extends State<BorrowArchivePage> {
             const SizedBox(height: 24),
             _buildBorrowForm(),
             const SizedBox(height: 32),
-            FilledButton.icon(
-              onPressed: () {},
-              icon: const Icon(Icons.check_rounded),
-              label: const Text('Ajukan Peminjaman'),
-              style: FilledButton.styleFrom(padding: const EdgeInsets.all(16)),
+            BlocConsumer<ArchiveCubit, ArchiveState>(
+              listener: (context, state) {
+                if(state is BorrowArchiveLoaded) {
+                  showSnackBar(message: state.message);
+                }
+
+                if(state is BorrowArchiveError) {
+                  showSnackBar(message: state.message);
+                }
+              },
+              builder: (context, state) {
+                if (state is BorrowArchiveLoading) {
+                  return FilledButton.icon(
+                    onPressed: null,
+                    icon: null,
+                    label: const CircularProgressIndicator(strokeWidth: 2),
+                    style: FilledButton.styleFrom(
+                      padding: const EdgeInsets.all(16),
+                    ),
+                  );
+                }
+                return FilledButton.icon(
+                  onPressed: () async {
+                    if (!_formKey.currentState!.validate()) return;
+
+                    await archiveCubit.borrowArchive(
+                      archiveId: '${widget.archive.archiveNumber}',
+                      profileId: '${authCubit.userProfile.id}',
+                      description: _descriptionController.text.trim(),
+                      borrowedDate: datePicked,
+                    );
+                  },
+                  icon: const Icon(Icons.check_rounded),
+                  label: const Text('Ajukan Peminjaman'),
+                  style: FilledButton.styleFrom(
+                    padding: const EdgeInsets.all(16),
+                  ),
+                );
+              },
             ),
           ],
         ),
@@ -120,7 +162,7 @@ class _BorrowArchivePageState extends State<BorrowArchivePage> {
         ),
         const SizedBox(height: 16),
         TextFormField(
-          controller: _purposeController,
+          controller: _descriptionController,
           decoration: InputDecoration(
             hintText: 'Keterangan',
             labelText: 'Keterangan',
@@ -144,6 +186,7 @@ class _BorrowArchivePageState extends State<BorrowArchivePage> {
 
             setState(() {
               _datePickerController.text = dateFormat.format(date);
+              datePicked = date;
             });
           },
           controller: _datePickerController,
@@ -155,52 +198,6 @@ class _BorrowArchivePageState extends State<BorrowArchivePage> {
           readOnly: true,
           validator: validate,
         ),
-      ],
-    );
-  }
-
-  // void _submitBorrowRequest() {
-  //   if (_formKey.currentState!.validate() && _borrowDate != null) {
-  //     // Implement borrow request submission logic here
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       const SnackBar(
-  //         content: Text('Permintaan peminjaman berhasil diajukan'),
-  //         behavior: SnackBarBehavior.floating,
-  //       ),
-  //     );
-  //     Navigator.pop(context);
-  //   } else if (_borrowDate == null) {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       const SnackBar(
-  //         content: Text('Silakan pilih tanggal peminjaman'),
-  //         behavior: SnackBarBehavior.floating,
-  //       ),
-  //     );
-  //   }
-  // }
-}
-
-class _ItemInfo extends StatelessWidget {
-  const _ItemInfo({
-    required this.icon,
-    required this.label,
-    required this.value,
-  });
-
-  final IconData icon;
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Row(
-      children: [
-        Icon(icon, size: 20, color: theme.colorScheme.primary),
-        const SizedBox(width: 8),
-        Text('$label: ', style: const TextStyle(fontWeight: FontWeight.w500)),
-        Text(value),
       ],
     );
   }
