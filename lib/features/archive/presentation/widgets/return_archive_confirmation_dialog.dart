@@ -28,7 +28,10 @@ class ReturnConfirmationDialog extends StatelessWidget {
               child: OutlinedButton.icon(
                 onPressed: context.pop,
                 icon: const Icon(Icons.close_rounded),
-                label: const Text('Batal'),
+                label: const Text(
+                  'Batal',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
                 style: OutlinedButton.styleFrom(
                   fixedSize: const Size.fromHeight(48),
                   padding: EdgeInsets.zero,
@@ -76,7 +79,10 @@ class ReturnConfirmationDialog extends StatelessWidget {
                     onPressed: () async => await archiveCubit
                         .returnBorrowedArchive(archiveLoan: archiveLoan),
                     icon: const Icon(Icons.check_rounded),
-                    label: const Text('Konfirmasi'),
+                    label: const Text(
+                      'Konfirmasi',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
                     style: FilledButton.styleFrom(
                       fixedSize: Size.fromHeight(48),
                       padding: EdgeInsets.zero,

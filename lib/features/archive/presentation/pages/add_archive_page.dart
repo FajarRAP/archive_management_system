@@ -151,13 +151,9 @@ class _AddArchivePageState extends State<AddArchivePage> {
                     },
                     builder: (context, state) {
                       if (state is InsertArchiveLoading) {
-                        return ElevatedButton(
+                        return FilledButton(
                           onPressed: null,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: colorScheme.primary,
-                            foregroundColor: Colors.white,
-                            elevation: 2,
-                          ),
+                          style: FilledButton.styleFrom(elevation: 2),
                           child: const CircularProgressIndicator(
                             strokeWidth: 2,
                             valueColor: AlwaysStoppedAnimation(Colors.white),
@@ -165,7 +161,7 @@ class _AddArchivePageState extends State<AddArchivePage> {
                         );
                       }
 
-                      return ElevatedButton.icon(
+                      return FilledButton.icon(
                         onPressed: () async {
                           if (!_formKey.currentState!.validate()) return;
 
@@ -178,16 +174,11 @@ class _AddArchivePageState extends State<AddArchivePage> {
                               status: archiveStatus);
                           await archiveCubit.insertArchive(archive: archive);
                         },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: colorScheme.primary,
-                          foregroundColor: Colors.white,
-                          elevation: 2,
-                        ),
-                        icon: Icon(Icons.add_rounded),
-                        label: Text(
+                        style: FilledButton.styleFrom(elevation: 2),
+                        icon: const Icon(Icons.add_rounded),
+                        label: const Text(
                           'Tambah Arsip',
                           style: TextStyle(
-                            letterSpacing: 1,
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                           ),

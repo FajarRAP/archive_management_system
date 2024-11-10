@@ -37,9 +37,7 @@ class _LoginPageState extends State<LoginPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const FlutterLogo(
-              size: 100,
-            ),
+            const FlutterLogo(size: 100),
             const SizedBox(height: 24),
             Form(
               key: _formKey,
@@ -73,37 +71,58 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
             const SizedBox(height: 12),
-            ElevatedButton(
-              onPressed: () async {
-                if (!_formKey.currentState!.validate()) return;
+            BlocConsumer<AuthCubit, AuthState>(
+              listener: (context, state) {
+                if (state is LoginError) {
+                  showSnackBar(message: state.message);
+                }
 
-                await authCubit.login(
-                  email: _emailController.text.trim(),
-                  password: _passwordController.text.trim(),
+                if (state is LoginLoaded) {
+                  showSnackBar(message: 'Berhasil Login');
+                  context.go(homeRoute);
+                }
+              },
+              builder: (context, state) {
+                if (state is LoginLoading) {
+                  return FilledButton(
+                    onPressed: null,
+                    style: ElevatedButton.styleFrom(
+                      fixedSize: const Size.fromWidth(120),
+                      padding: const EdgeInsets.all(12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: const CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation(Colors.white),
+                    ),
+                  );
+                }
+
+                return FilledButton.icon(
+                  onPressed: () async {
+                    if (!_formKey.currentState!.validate()) return;
+
+                    await authCubit.login(
+                      email: _emailController.text.trim(),
+                      password: _passwordController.text.trim(),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    fixedSize: const Size.fromWidth(120),
+                    padding: const EdgeInsets.all(12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  icon: Icon(Icons.login),
+                  label: const Text(
+                    'Login',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
                 );
               },
-              style: ElevatedButton.styleFrom(
-                fixedSize: const Size.fromWidth(120),
-                padding: const EdgeInsets.all(12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              child: BlocConsumer<AuthCubit, AuthState>(
-                listener: (context, state) {
-                  if (state is LoginLoaded) {
-                    showSnackBar(message: 'Berhasil Login');
-                    context.go(homeRoute);
-                  }
-                },
-                builder: (context, state) {
-                  if (state is LoginLoading) {
-                    return const CircularProgressIndicator();
-                  }
-
-                  return const Text('Login');
-                },
-              ),
             ),
           ],
         ),

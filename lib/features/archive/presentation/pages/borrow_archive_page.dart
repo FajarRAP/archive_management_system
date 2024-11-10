@@ -2,6 +2,7 @@ import 'package:archive_management_system/core/common/snack_bar.dart';
 import 'package:archive_management_system/features/archive/domain/entities/archive_loan_entity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/common/constants.dart';
@@ -102,12 +103,15 @@ class _BorrowArchivePageState extends State<BorrowArchivePage> {
             _buildBorrowForm(),
             const SizedBox(height: 32),
             BlocConsumer<ArchiveCubit, ArchiveState>(
+              buildWhen: (previous, current) => current is BorrowArchive,
               listener: (context, state) {
-                if (state is BorrowArchiveLoaded) {
+                if (state is BorrowArchiveError) {
                   showSnackBar(message: state.message);
                 }
 
-                if (state is BorrowArchiveError) {
+                if (state is BorrowArchiveLoaded) {
+                  context.pop();
+                  archiveCubit.getArchive();
                   showSnackBar(message: state.message);
                 }
               },
@@ -115,8 +119,10 @@ class _BorrowArchivePageState extends State<BorrowArchivePage> {
                 if (state is BorrowArchiveLoading) {
                   return FilledButton.icon(
                     onPressed: null,
-                    icon: null,
-                    label: const CircularProgressIndicator(strokeWidth: 2),
+                    label: const CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation(Colors.white),
+                    ),
                     style: FilledButton.styleFrom(
                       padding: const EdgeInsets.all(16),
                     ),
@@ -135,7 +141,13 @@ class _BorrowArchivePageState extends State<BorrowArchivePage> {
                     await archiveCubit.borrowArchive(archiveLoan: archiveLoan);
                   },
                   icon: const Icon(Icons.check_rounded),
-                  label: const Text('Ajukan Peminjaman'),
+                  label: const Text(
+                    'Ajukan Peminjaman',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                   style: FilledButton.styleFrom(
                     padding: const EdgeInsets.all(16),
                   ),

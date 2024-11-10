@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/common/failure.dart';
 import '../../domain/entities/profile_entity.dart';
@@ -24,8 +25,15 @@ class AuthRepositoriesImpl extends AuthRepositories {
       }
 
       return Left(Failure());
+    } on AuthException catch (ae) {
+      switch (ae.statusCode) {
+        case '400':
+          return Left(Failure(message: 'Email atau password salah'));
+        default:
+          return Left(Failure(message: '$ae'));
+      }
     } catch (e) {
-      return Left(Failure(message: '$e'));
+      return Left(Failure());
     }
   }
 
@@ -36,7 +44,7 @@ class AuthRepositoriesImpl extends AuthRepositories {
 
       return Right('Berhasil Logout');
     } catch (e) {
-      return Left(Failure(message: '$e'));
+      return Left(Failure());
     }
   }
 
@@ -47,7 +55,7 @@ class AuthRepositoriesImpl extends AuthRepositories {
 
       return Right(ProfileModel.fromJson(datas.first));
     } catch (e) {
-      return Left(Failure(message: '$e'));
+      return Left(Failure());
     }
   }
 }

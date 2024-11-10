@@ -259,21 +259,17 @@ class _UpdateDeleteArchivePageState extends State<UpdateDeleteArchivePage> {
                     },
                     builder: (context, state) {
                       if (state is UpdateArchiveLoading) {
-                        return ElevatedButton(
+                        return FilledButton(
                           onPressed: null,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: colorScheme.primary,
-                            elevation: 2,
-                            foregroundColor: Colors.white,
-                          ),
-                          child: CircularProgressIndicator(
+                          style: FilledButton.styleFrom(elevation: 2),
+                          child: const CircularProgressIndicator(
                             strokeWidth: 2,
                             valueColor: AlwaysStoppedAnimation(Colors.white),
                           ),
                         );
                       }
 
-                      return ElevatedButton.icon(
+                      return FilledButton.icon(
                         onPressed: () async {
                           if (!_formKey.currentState!.validate()) return;
 
@@ -288,18 +284,13 @@ class _UpdateDeleteArchivePageState extends State<UpdateDeleteArchivePage> {
 
                           await archiveCubit.updateArchive(archive: archive);
                         },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: colorScheme.primary,
-                          elevation: 2,
-                          foregroundColor: Colors.white,
-                        ),
+                        style: FilledButton.styleFrom(elevation: 2),
                         icon: const Icon(Icons.edit_rounded),
-                        label: Text(
+                        label: const Text(
                           'Simpan Perubahan',
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
-                            letterSpacing: 1,
                           ),
                         ),
                       );

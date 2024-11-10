@@ -9,12 +9,14 @@ class ReturnArchivePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final archiveCubit = context.read<ArchiveCubit>();
+
     return Scaffold(
       appBar: AppBar(title: const Text('Pengembalian')),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: BlocBuilder<ArchiveCubit, ArchiveState>(
-          bloc: context.read<ArchiveCubit>()..getArchiveLoans(),
+          bloc: archiveCubit..getArchiveLoans(),
           buildWhen: (previous, current) => current is GetArchiveLoans,
           builder: (context, state) {
             if (state is GetArchiveLoansLoading) {
@@ -22,25 +24,29 @@ class ReturnArchivePage extends StatelessWidget {
             }
 
             if (state is GetArchiveLoansLoaded) {
-              return Column(
-                children: [
-                  TextFormField(
-                    decoration: InputDecoration(
-                      hintText: 'Cari',
-                      prefixIcon: const Icon(Icons.search),
+              return RefreshIndicator(
+                onRefresh: archiveCubit.getArchiveLoans,
+                displacement: 10,
+                child: Column(
+                  children: [
+                    TextFormField(
+                      decoration: InputDecoration(
+                        hintText: 'Cari',
+                        prefixIcon: const Icon(Icons.search),
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 16),
-                  Expanded(
-                    child: ListView.separated(
-                      itemBuilder: (context, index) => ReturnArchiveItem(
-                          archiveLoan: state.archiveLoans[index]),
-                      separatorBuilder: (context, index) =>
-                          const SizedBox(height: 12),
-                      itemCount: state.archiveLoans.length,
+                    const SizedBox(height: 16),
+                    Expanded(
+                      child: ListView.separated(
+                        itemBuilder: (context, index) => ReturnArchiveItem(
+                            archiveLoan: state.archiveLoans[index]),
+                        separatorBuilder: (context, index) =>
+                            const SizedBox(height: 12),
+                        itemCount: state.archiveLoans.length,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               );
             }
 

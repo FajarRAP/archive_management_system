@@ -116,49 +116,66 @@ class ProfilePage extends StatelessWidget {
                             const SizedBox(height: 24),
                             Align(
                               alignment: Alignment.center,
-                              child: ElevatedButton.icon(
-                                onPressed: authCubit.logout,
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.redAccent,
-                                  foregroundColor: colorScheme.onPrimary,
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 24,
-                                    vertical: 12,
-                                  ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(30),
-                                  ),
-                                  elevation: 5,
-                                ),
-                                icon: Icon(Icons.logout, color: Colors.white),
-                                label: BlocConsumer<AuthCubit, AuthState>(
-                                  buildWhen: (previous, current) =>
-                                      current is LogoutState,
-                                  listener: (context, state) {
-                                    if (state is LogoutLoaded) {
-                                      showSnackBar(message: state.message);
-                                      context.go(loginRoute);
-                                    }
+                              child: BlocConsumer<AuthCubit, AuthState>(
+                                buildWhen: (previous, current) =>
+                                    current is LogoutState,
+                                listener: (context, state) {
+                                  if (state is LogoutLoaded) {
+                                    showSnackBar(message: state.message);
+                                    context.go(loginRoute);
+                                  }
 
-                                    if (state is LogoutError) {
-                                      showSnackBar(message: state.message);
-                                    }
-                                  },
-                                  builder: (context, state) {
-                                    if (state is LogoutLoading) {
-                                      return const CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                      );
-                                    }
-                                    return Text(
+                                  if (state is LogoutError) {
+                                    showSnackBar(message: state.message);
+                                  }
+                                },
+                                builder: (context, state) {
+                                  if (state is LogoutLoading) {
+                                    return ElevatedButton(
+                                      onPressed: null,
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.redAccent,
+                                        elevation: 5,
+                                        fixedSize: const Size(150, 56),
+                                        foregroundColor: colorScheme.onPrimary,
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 24,
+                                          vertical: 12,
+                                        ),
+                                      ),
+                                      child: const Center(
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          valueColor: AlwaysStoppedAnimation(
+                                            Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  }
+
+                                  return ElevatedButton.icon(
+                                    onPressed: authCubit.logout,
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.redAccent,
+                                      elevation: 5,
+                                      fixedSize: const Size(150, 56),
+                                      foregroundColor: colorScheme.onPrimary,
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 24,
+                                        vertical: 12,
+                                      ),
+                                    ),
+                                    icon: Icon(Icons.logout),
+                                    label: const Text(
                                       'Log Out',
                                       style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold,
                                       ),
-                                    );
-                                  },
-                                ),
+                                    ),
+                                  );
+                                },
                               ),
                             )
                           ],
