@@ -1,4 +1,6 @@
+import 'package:archive_management_system/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
@@ -18,8 +20,9 @@ class ReturnArchiveItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dateFormat = DateFormat('dd MMMM yyyy');
+    final authCubit = context.read<AuthCubit>();
     final colorScheme = Theme.of(context).colorScheme;
+    final dateFormat = DateFormat('dd MMMM yyyy');
 
     return Container(
       decoration: const BoxDecoration(
@@ -67,7 +70,8 @@ class ReturnArchiveItem extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                if (archiveLoan.returnedAt == null)
+                if (archiveLoan.returnedAt == null &&
+                    authCubit.user?.userMetadata?['is_admin'])
                   TextButton.icon(
                     onPressed: () => showDialog(
                         context: context,
@@ -79,7 +83,9 @@ class ReturnArchiveItem extends StatelessWidget {
                       foregroundColor: colorScheme.primary,
                     ),
                   ),
-                if (archiveLoan.returnedAt != null) const Spacer(),
+                if (archiveLoan.returnedAt != null ||
+                    !authCubit.user?.userMetadata?['is_admin'])
+                  const Spacer(),
                 TextButton.icon(
                   onPressed: () => context.push(returnArchiveDetailRoute,
                       extra: archiveLoan),

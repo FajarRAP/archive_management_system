@@ -108,9 +108,19 @@ class ArchiveRepositoriesImpl extends ArchiveRepositories {
           .returnBorrowedArchive('${archiveLoan.archiveLoanId}');
 
       return Right(ArchiveLoanModel.fromJson(datas.first));
-    } catch (e, s) {
-      print(e);
-      print(s);
+    } catch (e) {
+      return Left(Failure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<ArchiveLoanEntity>>> getArchiveLoansByUser(
+      String userId) async {
+    try {
+      final datas = await archiveRemoteDataSource.getArchiveLoansByUser(userId);
+
+      return Right(datas.map(mapArchiveLoan).toList());
+    } catch (e) {
       return Left(Failure());
     }
   }

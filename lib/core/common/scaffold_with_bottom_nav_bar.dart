@@ -12,7 +12,7 @@ class ScaffoldWithBottomNavBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: navigationShell,
+      body: SafeArea(child: navigationShell),
       bottomNavigationBar: BottomNavigationBar(
         onTap: navigationShell.goBranch,
         currentIndex: navigationShell.currentIndex,

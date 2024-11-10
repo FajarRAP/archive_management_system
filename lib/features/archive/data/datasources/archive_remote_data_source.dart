@@ -7,6 +7,7 @@ import '../models/archive_model.dart';
 abstract class ArchiveRemoteDataSource {
   Future<List<Map<String, dynamic>>> getArchives();
   Future<List<Map<String, dynamic>>> getArchiveLoans();
+  Future<List<Map<String, dynamic>>> getArchiveLoansByUser(String userId);
   Future<List<Map<String, dynamic>>> insertArchive(ArchiveModel archive);
   Future<List<Map<String, dynamic>>> updateArchive(ArchiveModel archive);
   Future<List<Map<String, dynamic>>> deleteArchive(String archiveId);
@@ -54,10 +55,6 @@ class ArchiveRemoteDataSourceImpl extends ArchiveRemoteDataSource {
   @override
   Future<List<Map<String, dynamic>>> borrowArchive(
       ArchiveLoanModel archiveLoan) async {
-    // 'no_arsip': archiveId,
-    // 'profile_id': profileId,
-    // 'keterangan': description,
-    // 'tanggal_pinjam': borrowedDate.toIso8601String(),
     return await supabase
         .from(archiveLoanTable)
         .insert(archiveLoan.toJson())
@@ -90,5 +87,15 @@ class ArchiveRemoteDataSourceImpl extends ArchiveRemoteDataSource {
         .eq('no_pinjam', archiveLoanId)
         .select(
             'no_pinjam, archive:no_arsip(*), profile:profile_id(*), tanggal_pinjam, keterangan, created_at, returned_at');
+  }
+
+  @override
+  Future<List<Map<String, dynamic>>> getArchiveLoansByUser(
+      String userId) async {
+    return await supabase
+        .from(archiveLoanTable)
+        .select(
+            'no_pinjam, archive:no_arsip(*), profile:profile_id(*), tanggal_pinjam, keterangan, created_at, returned_at')
+        .eq('profile_id', userId);
   }
 }

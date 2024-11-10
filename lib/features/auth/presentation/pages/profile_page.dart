@@ -51,7 +51,7 @@ class ProfilePage extends StatelessWidget {
                       const SizedBox(height: 12),
                       Text(
                         state.user.name,
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -59,7 +59,8 @@ class ProfilePage extends StatelessWidget {
                       ),
                       Text(
                         state.user.jobTitle,
-                        style: TextStyle(fontSize: 16, color: Colors.white70),
+                        style: const TextStyle(
+                            fontSize: 16, color: Colors.white70),
                       ),
                     ],
                   ),
@@ -84,7 +85,8 @@ class ProfilePage extends StatelessWidget {
                               ),
                               title: Text(
                                 'Nama',
-                                style: TextStyle(fontWeight: FontWeight.bold),
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold),
                               ),
                               subtitle: Text(state.user.name),
                             ),
@@ -96,7 +98,8 @@ class ProfilePage extends StatelessWidget {
                               ),
                               title: Text(
                                 'NIP',
-                                style: TextStyle(fontWeight: FontWeight.bold),
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold),
                               ),
                               subtitle: Text(state.user.employeeId),
                             ),
@@ -108,7 +111,8 @@ class ProfilePage extends StatelessWidget {
                               ),
                               title: Text(
                                 'Jabatan',
-                                style: TextStyle(fontWeight: FontWeight.bold),
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold),
                               ),
                               subtitle: Text(state.user.jobTitle),
                             ),
@@ -136,19 +140,15 @@ class ProfilePage extends StatelessWidget {
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: Colors.redAccent,
                                         elevation: 5,
-                                        fixedSize: const Size(150, 56),
-                                        foregroundColor: colorScheme.onPrimary,
+                                        fixedSize: const Size.fromWidth(150),
                                         padding: const EdgeInsets.symmetric(
-                                          horizontal: 24,
                                           vertical: 12,
                                         ),
                                       ),
-                                      child: const Center(
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 2,
-                                          valueColor: AlwaysStoppedAnimation(
-                                            Colors.white,
-                                          ),
+                                      child: const CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        valueColor: AlwaysStoppedAnimation(
+                                          Colors.white,
                                         ),
                                       ),
                                     );
@@ -159,14 +159,13 @@ class ProfilePage extends StatelessWidget {
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: Colors.redAccent,
                                       elevation: 5,
-                                      fixedSize: const Size(150, 56),
+                                      fixedSize: const Size.fromWidth(150),
                                       foregroundColor: colorScheme.onPrimary,
                                       padding: const EdgeInsets.symmetric(
-                                        horizontal: 24,
                                         vertical: 12,
                                       ),
                                     ),
-                                    icon: Icon(Icons.logout),
+                                    icon: const Icon(Icons.logout),
                                     label: const Text(
                                       'Log Out',
                                       style: TextStyle(

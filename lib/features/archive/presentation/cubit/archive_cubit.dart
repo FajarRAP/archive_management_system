@@ -1,14 +1,15 @@
-import 'package:archive_management_system/features/archive/domain/entities/archive_loan_entity.dart';
-import 'package:archive_management_system/features/archive/domain/usecases/get_archive_loans_use_case.dart';
-import 'package:archive_management_system/features/archive/domain/usecases/return_borrowed_archive_use_case.dart';
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 
 import '../../domain/entities/archive_entity.dart';
+import '../../domain/entities/archive_loan_entity.dart';
 import '../../domain/usecases/borrow_archive_use_case.dart';
 import '../../domain/usecases/delete_archive_use_case.dart';
+import '../../domain/usecases/get_archive_loans_by_user_use_case.dart';
+import '../../domain/usecases/get_archive_loans_use_case.dart';
 import '../../domain/usecases/get_archives_use_case.dart';
 import '../../domain/usecases/insert_archive_use_case.dart';
+import '../../domain/usecases/return_borrowed_archive_use_case.dart';
 import '../../domain/usecases/update_archive_use_case.dart';
 
 part 'archive_state.dart';
@@ -17,6 +18,7 @@ class ArchiveCubit extends Cubit<ArchiveState> {
   ArchiveCubit({
     required this.getArchivesUseCase,
     required this.getArchiveLoansUseCase,
+    required this.getArchiveLoansByUserUseCase,
     required this.insertArchiveUseCase,
     required this.updateArchiveUseCase,
     required this.deleteArchiveUseCase,
@@ -26,6 +28,7 @@ class ArchiveCubit extends Cubit<ArchiveState> {
 
   final GetArchivesUseCase getArchivesUseCase;
   final GetArchiveLoansUseCase getArchiveLoansUseCase;
+  final GetArchiveLoansByUserUseCase getArchiveLoansByUserUseCase;
   final InsertArchiveUseCase insertArchiveUseCase;
   final UpdateArchiveUseCase updateArchiveUseCase;
   final DeleteArchiveUseCase deleteArchiveUseCase;
@@ -97,7 +100,8 @@ class ArchiveCubit extends Cubit<ArchiveState> {
     );
   }
 
-  Future<void> returnBorrowedArchive({required ArchiveLoanEntity archiveLoan}) async {
+  Future<void> returnBorrowedArchive(
+      {required ArchiveLoanEntity archiveLoan}) async {
     emit(ReturnBorrowedArchiveLoading());
 
     final result = await returnBorrowedArchiveUseCase(archiveLoan);
@@ -106,6 +110,17 @@ class ArchiveCubit extends Cubit<ArchiveState> {
       (l) => emit(ReturnBorrowedArchiveError(message: l.message)),
       (r) => emit(
           ReturnBorrowedArchiveLoaded(message: 'Pengembalian arsip berhasil')),
+    );
+  }
+
+  Future<void> getArchiveLoansByUser({required String userId}) async {
+    emit(GetArchiveLoansLoading());
+
+    final result = await getArchiveLoansByUserUseCase(userId);
+
+    result.fold(
+      (l) => emit(GetArchiveLoansError(message: l.message)),
+      (r) => emit(GetArchiveLoansLoaded(r)),
     );
   }
 }
