@@ -1,3 +1,5 @@
+import 'package:archive_management_system/features/archive/domain/entities/archive_loan_entity.dart';
+import 'package:archive_management_system/features/archive/presentation/pages/return_archive_detail.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -47,8 +49,16 @@ final router = GoRouter(
                   builder: (context, state) => const AddArchivePage(),
                 ),
                 GoRoute(
-                  path: returnArchiveRoute,
+                  path: 'return-archive',
                   builder: (context, state) => const ReturnArchivePage(),
+                  routes: <RouteBase>[
+                    GoRoute(
+                      path: 'detail',
+                      builder: (context, state) => ReturnArchiveDetail(
+                        archiveLoan: state.extra as ArchiveLoanEntity,
+                      ),
+                    ),
+                  ],
                 ),
                 GoRoute(
                   path: 'borrow-archive',

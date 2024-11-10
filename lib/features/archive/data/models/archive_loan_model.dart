@@ -2,8 +2,12 @@ import '../../../auth/data/models/profile_model.dart';
 import '../../domain/entities/archive_loan_entity.dart';
 import 'archive_model.dart';
 
+ArchiveLoanModel mapArchiveLoan(Map<String, dynamic> archiveLoan) =>
+    ArchiveLoanModel.fromJson(archiveLoan);
+
 class ArchiveLoanModel extends ArchiveLoanEntity {
   const ArchiveLoanModel({
+    required super.archiveLoanId,
     required super.archive,
     required super.profile,
     required super.description,
@@ -12,9 +16,24 @@ class ArchiveLoanModel extends ArchiveLoanEntity {
 
   factory ArchiveLoanModel.fromJson(Map<String, dynamic> json) =>
       ArchiveLoanModel(
-        archive: ArchiveModel.fromJson(json['archive']),
-        profile: ProfileModel.fromJson(json['profile']),
-        description: json['keterangan'],
-        borrowedDate: DateTime.parse(json['tanggal_pinjam']),
-      );
+          archiveLoanId: json['no_pinjam'],
+          archive: ArchiveModel.fromJson(json['archive']),
+          profile: ProfileModel.fromJson(json['profile']),
+          description: json['keterangan'],
+          borrowedDate: DateTime.parse(json['tanggal_pinjam']));
+
+  factory ArchiveLoanModel.fromEntity(ArchiveLoanEntity archiveLoan) =>
+      ArchiveLoanModel(
+          archiveLoanId: archiveLoan.archiveLoanId,
+          archive: archiveLoan.archive,
+          profile: archiveLoan.profile,
+          description: archiveLoan.description,
+          borrowedDate: archiveLoan.borrowedDate);
+
+  Map<String, dynamic> toJson() => {
+        'no_arsip': archive.archiveNumber,
+        'profile_id': profile.id,
+        'keterangan': description,
+        'tanggal_pinjam': borrowedDate.toIso8601String(),
+      };
 }

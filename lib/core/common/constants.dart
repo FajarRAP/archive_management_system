@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 
 final rootScaffoldMessengerState = GlobalKey<ScaffoldMessengerState>();
 
-const statusOptions = [availableStatus, borrowedStatus, lostStatus];
-
 const cardBoxShadow = [
   BoxShadow(
     color: Color.fromRGBO(158, 158, 158, .25),
@@ -12,6 +10,11 @@ const cardBoxShadow = [
     offset: Offset(0, 2),
   ),
 ];
+
+const archiveTable = 'archives';
+const archiveLoanTable = 'archive_loans';
+const profileTable = 'profiles';
+const statusOptions = [availableStatus, borrowedStatus, lostStatus];
 
 const availableStatus = 'Tersedia';
 const borrowedStatus = 'Dipinjam';
@@ -22,7 +25,8 @@ const homeRoute = '/';
 const archiveRoute = '${homeRoute}archive';
 const addArchiveRoute = '${homeRoute}add-archive';
 const borrowArchiveRoute = '${homeRoute}borrow-archive';
-const returnArchiveRoute = '/return-archive';
+const returnArchiveRoute = '${homeRoute}return-archive';
+const returnArchiveDetailRoute = '$returnArchiveRoute/detail';
 
 const reportRoute = '${homeRoute}report';
 

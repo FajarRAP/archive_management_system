@@ -1,5 +1,8 @@
 import '../../domain/entities/archive_entity.dart';
 
+ArchiveModel mapArchive(Map<String, dynamic> archive) =>
+    ArchiveModel.fromJson(archive);
+
 class ArchiveModel extends ArchiveEntity {
   const ArchiveModel({
     super.archiveNumber,

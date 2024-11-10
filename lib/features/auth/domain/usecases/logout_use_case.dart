@@ -1,7 +1,8 @@
-import 'package:archive_management_system/core/common/failure.dart';
-import 'package:archive_management_system/core/common/use_cases.dart';
-import 'package:archive_management_system/features/auth/domain/repositories/auth_repositories.dart';
 import 'package:dartz/dartz.dart';
+
+import '../../../../core/common/failure.dart';
+import '../../../../core/common/use_cases.dart';
+import '../repositories/auth_repositories.dart';
 
 class LogoutUseCase implements AsyncUseCaseNoParams<String> {
   const LogoutUseCase({required this.authRepositories});

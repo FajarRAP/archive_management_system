@@ -33,6 +33,7 @@ class AuthRepositoriesImpl extends AuthRepositories {
   Future<Either<Failure, String>> logout() async {
     try {
       await authRemoteDataSource.logout();
+
       return Right('Berhasil Logout');
     } catch (e) {
       return Left(Failure(message: '$e'));

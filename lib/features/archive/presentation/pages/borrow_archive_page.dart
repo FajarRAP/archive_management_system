@@ -1,4 +1,5 @@
 import 'package:archive_management_system/core/common/snack_bar.dart';
+import 'package:archive_management_system/features/archive/domain/entities/archive_loan_entity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -102,11 +103,11 @@ class _BorrowArchivePageState extends State<BorrowArchivePage> {
             const SizedBox(height: 32),
             BlocConsumer<ArchiveCubit, ArchiveState>(
               listener: (context, state) {
-                if(state is BorrowArchiveLoaded) {
+                if (state is BorrowArchiveLoaded) {
                   showSnackBar(message: state.message);
                 }
 
-                if(state is BorrowArchiveError) {
+                if (state is BorrowArchiveError) {
                   showSnackBar(message: state.message);
                 }
               },
@@ -125,12 +126,13 @@ class _BorrowArchivePageState extends State<BorrowArchivePage> {
                   onPressed: () async {
                     if (!_formKey.currentState!.validate()) return;
 
-                    await archiveCubit.borrowArchive(
-                      archiveId: '${widget.archive.archiveNumber}',
-                      profileId: '${authCubit.userProfile.id}',
-                      description: _descriptionController.text.trim(),
-                      borrowedDate: datePicked,
-                    );
+                    final archiveLoan = ArchiveLoanEntity(
+                        archive: widget.archive,
+                        profile: authCubit.userProfile,
+                        description: _descriptionController.text.trim(),
+                        borrowedDate: datePicked);
+
+                    await archiveCubit.borrowArchive(archiveLoan: archiveLoan);
                   },
                   icon: const Icon(Icons.check_rounded),
                   label: const Text('Ajukan Peminjaman'),

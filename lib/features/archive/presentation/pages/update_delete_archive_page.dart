@@ -69,8 +69,8 @@ class _UpdateDeleteArchivePageState extends State<UpdateDeleteArchivePage> {
                     const Text('Hapus Arsip'),
                   ],
                 ),
-                content: const Text(
-                  'Apakah anda yakin ingin menghapus arsip nomor xxx?',
+                content: Text(
+                  'Apakah anda yakin ingin menghapus arsip nomor ${widget.archive.archiveNumber}?',
                   style: TextStyle(fontSize: 16),
                 ),
                 actions: [
@@ -87,43 +87,39 @@ class _UpdateDeleteArchivePageState extends State<UpdateDeleteArchivePage> {
                       if (state is DeleteArchiveError) {
                         return showSnackBar(message: state.message);
                       }
+
                       if (state is DeleteArchiveLoaded) {
                         archiveCubit.getArchive();
+                        context.pop(); // Pop Dialog
+                        context.pop(); // Pop Page
                         return showSnackBar(message: state.message);
                       }
                     },
                     builder: (context, state) {
+                      if (state is DeleteArchiveLoading) {
+                        return ElevatedButton(
+                          onPressed: null,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: colorScheme.error,
+                            foregroundColor: Colors.white,
+                          ),
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation(Colors.white),
+                          ),
+                        );
+                      }
                       return ElevatedButton(
-                        onPressed: (state is DeleteArchiveLoading)
-                            ? null
-                            : () async {
-                                await archiveCubit.deleteArchive(
-                                  archiveId: '${widget.archive.archiveNumber}',
-                                );
-
-                                if (!context.mounted) return;
-
-                                context.pushReplacement(archiveRoute);
-                              },
+                        onPressed: () async {
+                          await archiveCubit.deleteArchive(
+                            archiveId: '${widget.archive.archiveNumber}',
+                          );
+                        },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: colorScheme.error,
                           foregroundColor: Colors.white,
                         ),
-                        child: BlocBuilder<ArchiveCubit, ArchiveState>(
-                          buildWhen: (previous, current) =>
-                              current is DeleteArchive,
-                          builder: (context, state) {
-                            if (state is DeleteArchiveLoading) {
-                              return CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor:
-                                    AlwaysStoppedAnimation(Colors.white),
-                              );
-                            }
-
-                            return const Text('Hapus');
-                          },
-                        ),
+                        child: const Text('Hapus'),
                       );
                     },
                   ),
@@ -262,60 +258,49 @@ class _UpdateDeleteArchivePageState extends State<UpdateDeleteArchivePage> {
                       }
                     },
                     builder: (context, state) {
-                      return ElevatedButton(
-                        onPressed: (state is UpdateArchiveLoading)
-                            ? null
-                            : () async {
-                                if (!_formKey.currentState!.validate()) return;
+                      if (state is UpdateArchiveLoading) {
+                        return ElevatedButton(
+                          onPressed: null,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: colorScheme.primary,
+                            elevation: 2,
+                            foregroundColor: Colors.white,
+                          ),
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation(Colors.white),
+                          ),
+                        );
+                      }
 
-                                // final archiveNumber =
-                                //     int.parse(_archiveController.text.trim());
-                                final subdistrict =
-                                    _subdistrictController.text.trim();
-                                final urban = _urbanController.text.trim();
-                                final archive = ArchiveEntity(
-                                    // archiveId: widget.archive.archiveId,
-                                    archiveNumber: widget.archive.archiveNumber,
-                                    subdistrict: subdistrict,
-                                    urban: urban,
-                                    status: _archiveStatus);
+                      return ElevatedButton.icon(
+                        onPressed: () async {
+                          if (!_formKey.currentState!.validate()) return;
 
-                                await archiveCubit.updateArchive(
-                                    archive: archive);
-                              },
+                          final subdistrict =
+                              _subdistrictController.text.trim();
+                          final urban = _urbanController.text.trim();
+                          final archive = ArchiveEntity(
+                              archiveNumber: widget.archive.archiveNumber,
+                              subdistrict: subdistrict,
+                              urban: urban,
+                              status: _archiveStatus);
+
+                          await archiveCubit.updateArchive(archive: archive);
+                        },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: colorScheme.primary,
                           elevation: 2,
                           foregroundColor: Colors.white,
                         ),
-                        child: BlocBuilder<ArchiveCubit, ArchiveState>(
-                          buildWhen: (previous, current) =>
-                              current is UpdateArchive,
-                          builder: (context, state) {
-                            if (state is UpdateArchiveLoading) {
-                              return CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor:
-                                    AlwaysStoppedAnimation(Colors.white),
-                              );
-                            }
-
-                            return Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: const [
-                                Icon(Icons.edit_rounded),
-                                SizedBox(width: 8),
-                                Text(
-                                  'Simpan Perubahan',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    letterSpacing: 1,
-                                  ),
-                                ),
-                              ],
-                            );
-                          },
+                        icon: const Icon(Icons.edit_rounded),
+                        label: Text(
+                          'Simpan Perubahan',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1,
+                          ),
                         ),
                       );
                     },

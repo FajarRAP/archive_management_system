@@ -22,22 +22,16 @@ class HomePage extends StatelessWidget {
 
     return BlocBuilder<AuthCubit, AuthState>(
       bloc: authCubit..getCurrentUser(),
+      buildWhen: (previous, current) => current is ProfileState,
       builder: (context, state) {
         return Scaffold(
           appBar: AppBar(
             title: Text('Hai, ${authCubit.user?.userMetadata?['name']}'),
           ),
-          body: _buildBody(),
+          body: user.userMetadata?['is_admin'] ? _AdminPage() : _UserPage(),
         );
       },
     );
-  }
-
-  Widget _buildBody() {
-    final user = getIt.get<s.SupabaseClient>().auth.currentUser;
-
-    if (user?.userMetadata?['is_admin']) return _AdminPage();
-    return _UserPage();
   }
 }
 
@@ -79,21 +73,11 @@ class _AdminPage extends StatelessWidget {
                     route: archiveRoute,
                   ),
                   MenuButton(
-                    title: 'Peminjaman',
-                    icon: Icons.assignment,
-                    route: archiveRoute,
-                  ),
-                  MenuButton(
                     title: 'Pengembalian',
                     icon: Icons.assignment_return,
                     route: returnArchiveRoute,
                   ),
-                  MenuButton(
-                    title: 'Laporan',
-                    icon: Icons.bar_chart,
-                    route: archiveRoute,
-                  ),
-                ],
+              ],
               ),
             ),
           ),

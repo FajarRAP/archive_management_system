@@ -1,10 +1,12 @@
-import 'package:archive_management_system/features/archive/domain/usecases/borrow_archive_use_case.dart';
+import 'package:archive_management_system/features/archive/domain/entities/archive_loan_entity.dart';
+import 'package:archive_management_system/features/archive/domain/usecases/get_archive_loans_use_case.dart';
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 
 import '../../domain/entities/archive_entity.dart';
+import '../../domain/usecases/borrow_archive_use_case.dart';
 import '../../domain/usecases/delete_archive_use_case.dart';
-import '../../domain/usecases/get_archive_use_case.dart';
+import '../../domain/usecases/get_archives_use_case.dart';
 import '../../domain/usecases/insert_archive_use_case.dart';
 import '../../domain/usecases/update_archive_use_case.dart';
 
@@ -12,14 +14,16 @@ part 'archive_state.dart';
 
 class ArchiveCubit extends Cubit<ArchiveState> {
   ArchiveCubit({
-    required this.getArchiveUseCase,
+    required this.getArchivesUseCase,
+    required this.getArchiveLoansUseCase,
     required this.insertArchiveUseCase,
     required this.updateArchiveUseCase,
     required this.deleteArchiveUseCase,
     required this.borrowArchiveUseCase,
   }) : super(ArchiveInitial());
 
-  final GetArchiveUseCase getArchiveUseCase;
+  final GetArchivesUseCase getArchivesUseCase;
+  final GetArchiveLoansUseCase getArchiveLoansUseCase;
   final InsertArchiveUseCase insertArchiveUseCase;
   final UpdateArchiveUseCase updateArchiveUseCase;
   final DeleteArchiveUseCase deleteArchiveUseCase;
@@ -27,7 +31,7 @@ class ArchiveCubit extends Cubit<ArchiveState> {
 
   Future<void> getArchive() async {
     emit(GetArchiveLoading());
-    final result = await getArchiveUseCase();
+    final result = await getArchivesUseCase();
 
     result.fold(
       (l) => emit(GetArchiveError(message: l.message)),
@@ -68,24 +72,25 @@ class ArchiveCubit extends Cubit<ArchiveState> {
     );
   }
 
-  Future<void> borrowArchive({
-    required String archiveId,
-    required String profileId,
-    required String description,
-    required DateTime borrowedDate,
-  }) async {
+  Future<void> borrowArchive({required ArchiveLoanEntity archiveLoan}) async {
     emit(BorrowArchiveLoading());
-    final params = BorrowArchiveUseCaseParams(
-        archiveId: archiveId,
-        profileId: profileId,
-        description: description,
-        borrowedDate: borrowedDate);
 
-    final result = await borrowArchiveUseCase(params);
+    final result = await borrowArchiveUseCase(archiveLoan);
 
     result.fold(
       (l) => emit(BorrowArchiveError(message: l.message)),
       (r) => emit(BorrowArchiveLoaded('Peminjaman Arsip Berhasil')),
+    );
+  }
+
+  Future<void> getArchiveLoans() async {
+    emit(GetArchiveLoansLoading());
+
+    final result = await getArchiveLoansUseCase();
+
+    result.fold(
+      (l) => emit(GetArchiveLoansError(message: l.message)),
+      (r) => emit(GetArchiveLoansLoaded(r)),
     );
   }
 }

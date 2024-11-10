@@ -7,6 +7,8 @@ final class ArchiveInitial extends ArchiveState {}
 
 class GetArchive extends ArchiveState {}
 
+class GetArchiveLoans extends ArchiveState {}
+
 class InsertArchive extends ArchiveState {}
 
 class UpdateArchive extends ArchiveState {}
@@ -83,4 +85,18 @@ class BorrowArchiveError extends BorrowArchive {
   final String message;
 
   BorrowArchiveError({required this.message});
+}
+
+class GetArchiveLoansLoading extends GetArchiveLoans {}
+
+class GetArchiveLoansLoaded extends GetArchiveLoans {
+  final List<ArchiveLoanEntity> archiveLoans;
+
+  GetArchiveLoansLoaded(this.archiveLoans);
+}
+
+class GetArchiveLoansError extends GetArchiveLoans {
+  final String message;
+
+  GetArchiveLoansError({required this.message});
 }

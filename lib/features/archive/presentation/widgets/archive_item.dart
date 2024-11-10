@@ -1,12 +1,12 @@
-import 'package:archive_management_system/features/archive/presentation/widgets/archive_item_info.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/common/constants.dart';
+import '../../../../core/helpers/helpers.dart';
 import '../../../../dependency_injection.dart';
 import '../../domain/entities/archive_entity.dart';
-import 'text_badge.dart';
+import 'archive_item_info.dart';
 
 class ArchiveItem extends StatelessWidget {
   const ArchiveItem({
@@ -20,26 +20,12 @@ class ArchiveItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final user = getIt.get<SupabaseClient>().auth.currentUser;
-    late Widget textBadge;
-
-    switch (archive.status) {
-      case availableStatus:
-        textBadge = TextBadge(color: Colors.green, text: availableStatus);
-        break;
-      case borrowedStatus:
-        textBadge = TextBadge(color: Colors.red, text: borrowedStatus);
-        break;
-      case lostStatus:
-        textBadge = TextBadge(color: Colors.grey, text: lostStatus);
-        break;
-      default:
-    }
 
     return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+      decoration: const BoxDecoration(
+        borderRadius: BorderRadius.all(Radius.circular(12)),
         boxShadow: cardBoxShadow,
+        color: Colors.white,
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -73,7 +59,7 @@ class ArchiveItem extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 4),
-                      textBadge
+                      buildTextBadge(archive.status),
                     ],
                   ),
                 ),
@@ -123,28 +109,6 @@ class ArchiveItem extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildInfoRow({
-    required IconData icon,
-    required String label,
-    required String value,
-  }) {
-    return Row(
-      children: [
-        Icon(icon, size: 20, color: Colors.grey.shade600),
-        const SizedBox(width: 8),
-        Text(
-          '$label:',
-          style: TextStyle(color: Colors.grey.shade600, fontSize: 14),
-        ),
-        const SizedBox(width: 8),
-        Text(
-          value,
-          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-        ),
-      ],
     );
   }
 }

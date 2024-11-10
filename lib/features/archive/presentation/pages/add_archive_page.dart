@@ -64,8 +64,8 @@ class _AddArchivePageState extends State<AddArchivePage> {
                     padding: const EdgeInsets.all(16),
                     child: Icon(
                       Icons.archive_rounded,
-                      size: 48,
                       color: colorScheme.primary,
+                      size: 48,
                     ),
                   ),
                 ),
@@ -150,55 +150,47 @@ class _AddArchivePageState extends State<AddArchivePage> {
                       }
                     },
                     builder: (context, state) {
-                      return ElevatedButton(
-                        onPressed: (state is InsertArchiveLoading)
-                            ? null
-                            : () async {
-                                if (!_formKey.currentState!.validate()) return;
-                                // final archiveNumber =
-                                //     int.parse(_archiveController.text.trim());
-                                final subdistrict =
-                                    _subdistrictController.text.trim();
-                                final urban = _urbanController.text.trim();
-                                final archive = ArchiveEntity(
-                                    // archiveNumber: archiveNumber,
-                                    subdistrict: subdistrict,
-                                    urban: urban,
-                                    status: archiveStatus);
-                                await archiveCubit.insertArchive(
-                                    archive: archive);
-                              },
+                      if (state is InsertArchiveLoading) {
+                        return ElevatedButton(
+                          onPressed: null,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: colorScheme.primary,
+                            foregroundColor: Colors.white,
+                            elevation: 2,
+                          ),
+                          child: const CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation(Colors.white),
+                          ),
+                        );
+                      }
+
+                      return ElevatedButton.icon(
+                        onPressed: () async {
+                          if (!_formKey.currentState!.validate()) return;
+
+                          final subdistrict =
+                              _subdistrictController.text.trim();
+                          final urban = _urbanController.text.trim();
+                          final archive = ArchiveEntity(
+                              subdistrict: subdistrict,
+                              urban: urban,
+                              status: archiveStatus);
+                          await archiveCubit.insertArchive(archive: archive);
+                        },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: colorScheme.primary,
                           foregroundColor: Colors.white,
                           elevation: 2,
                         ),
-                        child: BlocBuilder<ArchiveCubit, ArchiveState>(
-                          builder: (context, state) {
-                            if (state is InsertArchiveLoading) {
-                              return const CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor:
-                                    AlwaysStoppedAnimation(Colors.white),
-                              );
-                            }
-
-                            return Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: const [
-                                Icon(Icons.add_rounded),
-                                SizedBox(width: 8),
-                                Text(
-                                  'Tambah Arsip',
-                                  style: TextStyle(
-                                    letterSpacing: 1,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            );
-                          },
+                        icon: Icon(Icons.add_rounded),
+                        label: Text(
+                          'Tambah Arsip',
+                          style: TextStyle(
+                            letterSpacing: 1,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       );
                     },

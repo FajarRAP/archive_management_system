@@ -1,16 +1,14 @@
-import 'package:archive_management_system/features/archive/data/models/archive_loan_model.dart';
-import 'package:archive_management_system/features/archive/domain/entities/archive_loan_entity.dart';
 import 'package:dartz/dartz.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../../core/common/constants.dart';
 import '../../../../core/common/failure.dart';
 import '../../domain/entities/archive_entity.dart';
+import '../../domain/entities/archive_loan_entity.dart';
 import '../../domain/repositories/archive_repositories.dart';
 import '../datasources/archive_remote_data_source.dart';
+import '../models/archive_loan_model.dart';
 import '../models/archive_model.dart';
-
-ArchiveModel mapArchive(Map<String, dynamic> archive) =>
-    ArchiveModel.fromJson(archive);
 
 class ArchiveRepositoriesImpl extends ArchiveRepositories {
   final ArchiveRemoteDataSource archiveRemoteDataSource;
@@ -18,9 +16,9 @@ class ArchiveRepositoriesImpl extends ArchiveRepositories {
   ArchiveRepositoriesImpl({required this.archiveRemoteDataSource});
 
   @override
-  Future<Either<Failure, List<ArchiveEntity>>> getArchive() async {
+  Future<Either<Failure, List<ArchiveEntity>>> getArchives() async {
     try {
-      final result = await archiveRemoteDataSource.getArchive();
+      final result = await archiveRemoteDataSource.getArchives();
       return Right(result.map(mapArchive).toList());
     } catch (e) {
       return Left(Failure());
@@ -66,21 +64,38 @@ class ArchiveRepositoriesImpl extends ArchiveRepositories {
           .updateArchive(ArchiveModel.fromEntity(archive));
       final archives = result.map(mapArchive).toList();
       return Right(archives.first);
+    } catch (e, s) {
+      print(e);
+      print(s);
+      return Left(Failure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, ArchiveLoanEntity>> borrowArchive(
+      ArchiveLoanEntity archiveLoan) async {
+    try {
+      await archiveRemoteDataSource.updateArchiveStatus(
+        '${archiveLoan.archive.archiveNumber}',
+        borrowedStatus,
+      );
+      final datas = await archiveRemoteDataSource
+          .borrowArchive(ArchiveLoanModel.fromEntity(archiveLoan));
+
+      return Right(ArchiveLoanModel.fromJson(datas.first));
     } catch (e) {
       return Left(Failure());
     }
   }
 
   @override
-  Future<Either<Failure, ArchiveLoanEntity>> borrowArchive(String archiveId,
-      String profileId, String description, DateTime borrowedDate) async {
+  Future<Either<Failure, List<ArchiveLoanEntity>>> getArchiveLoans() async {
     try {
-      final datas = await archiveRemoteDataSource.borrowArchive(
-          archiveId, profileId, description, borrowedDate);
+      final datas = await archiveRemoteDataSource.getArchiveLoans();
 
-      return Right(ArchiveLoanModel.fromJson(datas.first));
+      return Right(datas.map(mapArchiveLoan).toList());
     } catch (e) {
-      return Left(Failure(message: '$e'));
+      return Left(Failure());
     }
   }
 }

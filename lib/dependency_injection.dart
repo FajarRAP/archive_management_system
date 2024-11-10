@@ -1,4 +1,5 @@
 import 'package:archive_management_system/features/archive/domain/usecases/borrow_archive_use_case.dart';
+import 'package:archive_management_system/features/archive/domain/usecases/get_archive_loans_use_case.dart';
 import 'package:archive_management_system/features/auth/domain/usecases/get_current_user_use_case.dart';
 import 'package:get_it/get_it.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -7,7 +8,7 @@ import 'features/archive/data/datasources/archive_remote_data_source.dart';
 import 'features/archive/data/repositories/archive_repositories_impl.dart';
 import 'features/archive/domain/repositories/archive_repositories.dart';
 import 'features/archive/domain/usecases/delete_archive_use_case.dart';
-import 'features/archive/domain/usecases/get_archive_use_case.dart';
+import 'features/archive/domain/usecases/get_archives_use_case.dart';
 import 'features/archive/domain/usecases/insert_archive_use_case.dart';
 import 'features/archive/domain/usecases/update_archive_use_case.dart';
 import 'features/archive/presentation/cubit/archive_cubit.dart';
@@ -43,8 +44,10 @@ void setup() {
         () => ArchiveRepositoriesImpl(archiveRemoteDataSource: getIt.get()))
     ..registerLazySingleton<ArchiveCubit>(
       () => ArchiveCubit(
-          getArchiveUseCase:
-              GetArchiveUseCase(archiveRepositories: getIt.get()),
+          getArchivesUseCase:
+              GetArchivesUseCase(archiveRepositories: getIt.get()),
+          getArchiveLoansUseCase:
+              GetArchiveLoansUseCase(archiveRepositories: getIt.get()),
           insertArchiveUseCase:
               InsertArchiveUseCase(archiveRepositories: getIt.get()),
           updateArchiveUseCase:

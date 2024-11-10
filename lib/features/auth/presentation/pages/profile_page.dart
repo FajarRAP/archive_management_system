@@ -11,23 +11,27 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
     final authCubit = context.read<AuthCubit>();
+    final colorScheme = Theme.of(context).colorScheme;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Profil'),
-        backgroundColor: colorScheme.primary,
-      ),
-      body: BlocBuilder<AuthCubit, AuthState>(
-        bloc: authCubit..getCurrentUser(),
-        builder: (context, state) {
-          if (state is ProfileLoading) {
-            return Center(child: const CircularProgressIndicator());
-          }
+    return BlocBuilder<AuthCubit, AuthState>(
+      bloc: authCubit..getCurrentUser(),
+      buildWhen: (previous, current) => current is ProfileState,
+      builder: (context, state) {
+        if (state is ProfileLoading) {
+          return Center(child: const CircularProgressIndicator());
+        }
 
-          if (state is ProfileLoaded) {
-            return Column(
+        if (state is ProfileLoaded) {
+          return Scaffold(
+            appBar: AppBar(
+              title: const Text(
+                'Profil',
+                style: TextStyle(color: Colors.white),
+              ),
+              backgroundColor: colorScheme.primary,
+            ),
+            body: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Container(
@@ -62,7 +66,7 @@ class ProfilePage extends StatelessWidget {
                 ),
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.all(16.0),
+                    padding: const EdgeInsets.all(16),
                     child: Card(
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -74,8 +78,10 @@ class ProfilePage extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             ListTile(
-                              leading:
-                                  Icon(Icons.badge, color: colorScheme.primary),
+                              leading: Icon(
+                                Icons.badge,
+                                color: colorScheme.primary,
+                              ),
                               title: Text(
                                 'Nama',
                                 style: TextStyle(fontWeight: FontWeight.bold),
@@ -96,8 +102,10 @@ class ProfilePage extends StatelessWidget {
                             ),
                             const Divider(),
                             ListTile(
-                              leading:
-                                  Icon(Icons.work, color: colorScheme.primary),
+                              leading: Icon(
+                                Icons.work,
+                                color: colorScheme.primary,
+                              ),
                               title: Text(
                                 'Jabatan',
                                 style: TextStyle(fontWeight: FontWeight.bold),
@@ -124,6 +132,8 @@ class ProfilePage extends StatelessWidget {
                                 ),
                                 icon: Icon(Icons.logout, color: Colors.white),
                                 label: BlocConsumer<AuthCubit, AuthState>(
+                                  buildWhen: (previous, current) =>
+                                      current is LogoutState,
                                   listener: (context, state) {
                                     if (state is LogoutLoaded) {
                                       showSnackBar(message: state.message);
@@ -158,12 +168,12 @@ class ProfilePage extends StatelessWidget {
                   ),
                 ),
               ],
-            );
-          }
+            ),
+          );
+        }
 
-          return const SizedBox();
-        },
-      ),
+        return const SizedBox();
+      },
     );
   }
 }

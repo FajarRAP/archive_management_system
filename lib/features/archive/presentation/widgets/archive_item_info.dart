@@ -21,7 +21,14 @@ class ArchiveItemInfo extends StatelessWidget {
         Icon(icon, size: 20, color: theme.colorScheme.primary),
         const SizedBox(width: 8),
         Text('$label: ', style: TextStyle(color: Colors.grey.shade600)),
-        Text(value, style: const TextStyle(fontWeight: FontWeight.w500)),
+        Expanded(
+          child: Text(
+            value,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(fontWeight: FontWeight.w500),
+          ),
+        ),
       ],
     );
   }
