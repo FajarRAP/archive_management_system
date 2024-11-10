@@ -1,5 +1,6 @@
 import 'package:archive_management_system/features/archive/domain/entities/archive_loan_entity.dart';
 import 'package:archive_management_system/features/archive/domain/usecases/get_archive_loans_use_case.dart';
+import 'package:archive_management_system/features/archive/domain/usecases/return_borrowed_archive_use_case.dart';
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 
@@ -20,6 +21,7 @@ class ArchiveCubit extends Cubit<ArchiveState> {
     required this.updateArchiveUseCase,
     required this.deleteArchiveUseCase,
     required this.borrowArchiveUseCase,
+    required this.returnBorrowedArchiveUseCase,
   }) : super(ArchiveInitial());
 
   final GetArchivesUseCase getArchivesUseCase;
@@ -28,6 +30,7 @@ class ArchiveCubit extends Cubit<ArchiveState> {
   final UpdateArchiveUseCase updateArchiveUseCase;
   final DeleteArchiveUseCase deleteArchiveUseCase;
   final BorrowArchiveUseCase borrowArchiveUseCase;
+  final ReturnBorrowedArchiveUseCase returnBorrowedArchiveUseCase;
 
   Future<void> getArchive() async {
     emit(GetArchiveLoading());
@@ -79,7 +82,7 @@ class ArchiveCubit extends Cubit<ArchiveState> {
 
     result.fold(
       (l) => emit(BorrowArchiveError(message: l.message)),
-      (r) => emit(BorrowArchiveLoaded('Peminjaman Arsip Berhasil')),
+      (r) => emit(BorrowArchiveLoaded('Peminjaman arsip berhasil')),
     );
   }
 
@@ -91,6 +94,18 @@ class ArchiveCubit extends Cubit<ArchiveState> {
     result.fold(
       (l) => emit(GetArchiveLoansError(message: l.message)),
       (r) => emit(GetArchiveLoansLoaded(r)),
+    );
+  }
+
+  Future<void> returnBorrowedArchive({required ArchiveLoanEntity archiveLoan}) async {
+    emit(ReturnBorrowedArchiveLoading());
+
+    final result = await returnBorrowedArchiveUseCase(archiveLoan);
+
+    result.fold(
+      (l) => emit(ReturnBorrowedArchiveError(message: l.message)),
+      (r) => emit(
+          ReturnBorrowedArchiveLoaded(message: 'Pengembalian arsip berhasil')),
     );
   }
 }

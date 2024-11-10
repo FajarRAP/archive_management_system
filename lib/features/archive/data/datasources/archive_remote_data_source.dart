@@ -14,6 +14,8 @@ abstract class ArchiveRemoteDataSource {
       ArchiveLoanModel archiveLoan);
   Future<List<Map<String, dynamic>>> updateArchiveStatus(
       String archiveId, String status);
+  Future<List<Map<String, dynamic>>> returnBorrowedArchive(
+      String archiveLoanId);
 }
 
 class ArchiveRemoteDataSourceImpl extends ArchiveRemoteDataSource {
@@ -60,7 +62,7 @@ class ArchiveRemoteDataSourceImpl extends ArchiveRemoteDataSource {
         .from(archiveLoanTable)
         .insert(archiveLoan.toJson())
         .select(
-            'archive:no_arsip(*), profile:profile_id(*), tanggal_pinjam, keterangan, created_at');
+            'archive:no_arsip(*), profile:profile_id(*), tanggal_pinjam, keterangan, created_at, returned_at');
   }
 
   @override
@@ -76,6 +78,17 @@ class ArchiveRemoteDataSourceImpl extends ArchiveRemoteDataSource {
   @override
   Future<List<Map<String, dynamic>>> getArchiveLoans() async {
     return await supabase.from(archiveLoanTable).select(
-        'no_pinjam, archive:no_arsip(*), profile:profile_id(*), tanggal_pinjam, keterangan, created_at');
+        'no_pinjam, archive:no_arsip(*), profile:profile_id(*), tanggal_pinjam, keterangan, created_at, returned_at');
+  }
+
+  @override
+  Future<List<Map<String, dynamic>>> returnBorrowedArchive(
+      String archiveLoanId) async {
+    return await supabase
+        .from(archiveLoanTable)
+        .update({'returned_at': DateTime.now().toIso8601String()})
+        .eq('no_pinjam', archiveLoanId)
+        .select(
+            'no_pinjam, archive:no_arsip(*), profile:profile_id(*), tanggal_pinjam, keterangan, created_at, returned_at');
   }
 }

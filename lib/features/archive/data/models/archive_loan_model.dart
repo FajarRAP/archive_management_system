@@ -7,7 +7,8 @@ ArchiveLoanModel mapArchiveLoan(Map<String, dynamic> archiveLoan) =>
 
 class ArchiveLoanModel extends ArchiveLoanEntity {
   const ArchiveLoanModel({
-    required super.archiveLoanId,
+    super.archiveLoanId,
+    super.returnedAt,
     required super.archive,
     required super.profile,
     required super.description,
@@ -16,11 +17,15 @@ class ArchiveLoanModel extends ArchiveLoanEntity {
 
   factory ArchiveLoanModel.fromJson(Map<String, dynamic> json) =>
       ArchiveLoanModel(
-          archiveLoanId: json['no_pinjam'],
-          archive: ArchiveModel.fromJson(json['archive']),
-          profile: ProfileModel.fromJson(json['profile']),
-          description: json['keterangan'],
-          borrowedDate: DateTime.parse(json['tanggal_pinjam']));
+        archiveLoanId: json['no_pinjam'],
+        archive: ArchiveModel.fromJson(json['archive']),
+        profile: ProfileModel.fromJson(json['profile']),
+        description: json['keterangan'],
+        borrowedDate: DateTime.parse(json['tanggal_pinjam']),
+        returnedAt: json['returned_at'] == null
+            ? null
+            : DateTime.parse(json['returned_at']),
+      );
 
   factory ArchiveLoanModel.fromEntity(ArchiveLoanEntity archiveLoan) =>
       ArchiveLoanModel(

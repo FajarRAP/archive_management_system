@@ -7,9 +7,11 @@ class ArchiveLoanEntity {
   final ProfileEntity profile;
   final String description;
   final DateTime borrowedDate;
+  final DateTime? returnedAt;
 
   const ArchiveLoanEntity({
     this.archiveLoanId,
+    this.returnedAt,
     required this.archive,
     required this.profile,
     required this.description,

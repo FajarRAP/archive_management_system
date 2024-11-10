@@ -64,9 +64,7 @@ class ArchiveRepositoriesImpl extends ArchiveRepositories {
           .updateArchive(ArchiveModel.fromEntity(archive));
       final archives = result.map(mapArchive).toList();
       return Right(archives.first);
-    } catch (e, s) {
-      print(e);
-      print(s);
+    } catch (e) {
       return Left(Failure());
     }
   }
@@ -95,6 +93,24 @@ class ArchiveRepositoriesImpl extends ArchiveRepositories {
 
       return Right(datas.map(mapArchiveLoan).toList());
     } catch (e) {
+      return Left(Failure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, ArchiveLoanEntity>> returnBorrowedArchive(
+      ArchiveLoanEntity archiveLoan) async {
+    try {
+      await archiveRemoteDataSource.updateArchiveStatus(
+          '${archiveLoan.archive.archiveNumber}', availableStatus);
+
+      final datas = await archiveRemoteDataSource
+          .returnBorrowedArchive('${archiveLoan.archiveLoanId}');
+
+      return Right(ArchiveLoanModel.fromJson(datas.first));
+    } catch (e, s) {
+      print(e);
+      print(s);
       return Left(Failure());
     }
   }

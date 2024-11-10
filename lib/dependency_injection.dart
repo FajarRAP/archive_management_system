@@ -1,5 +1,6 @@
 import 'package:archive_management_system/features/archive/domain/usecases/borrow_archive_use_case.dart';
 import 'package:archive_management_system/features/archive/domain/usecases/get_archive_loans_use_case.dart';
+import 'package:archive_management_system/features/archive/domain/usecases/return_borrowed_archive_use_case.dart';
 import 'package:archive_management_system/features/auth/domain/usecases/get_current_user_use_case.dart';
 import 'package:get_it/get_it.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -55,6 +56,8 @@ void setup() {
           deleteArchiveUseCase:
               DeleteArchiveUseCase(archiveRepositories: getIt.get()),
           borrowArchiveUseCase:
-              BorrowArchiveUseCase(archiveRepositories: getIt.get())),
+              BorrowArchiveUseCase(archiveRepositories: getIt.get()),
+          returnBorrowedArchiveUseCase:
+              ReturnBorrowedArchiveUseCase(archiveRepositories: getIt.get())),
     );
 }

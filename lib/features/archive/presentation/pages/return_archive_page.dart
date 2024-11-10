@@ -15,6 +15,7 @@ class ReturnArchivePage extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: BlocBuilder<ArchiveCubit, ArchiveState>(
           bloc: context.read<ArchiveCubit>()..getArchiveLoans(),
+          buildWhen: (previous, current) => current is GetArchiveLoans,
           builder: (context, state) {
             if (state is GetArchiveLoansLoading) {
               return const Center(child: CircularProgressIndicator());

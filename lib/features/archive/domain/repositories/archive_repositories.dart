@@ -11,4 +11,5 @@ abstract class ArchiveRepositories {
   Future<Either<Failure, ArchiveEntity>> updateArchive(ArchiveEntity archive);
   Future<Either<Failure, ArchiveEntity>> deleteArchive(String archiveId);
   Future<Either<Failure, ArchiveLoanEntity>> borrowArchive(ArchiveLoanEntity archiveLoan);
+  Future<Either<Failure, ArchiveLoanEntity>> returnBorrowedArchive(ArchiveLoanEntity archiveLoan);
 }

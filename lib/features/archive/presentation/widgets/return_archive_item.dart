@@ -67,17 +67,19 @@ class ReturnArchiveItem extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                TextButton.icon(
-                  onPressed: () => showDialog(
-                      context: context,
-                      builder: (context) =>
-                          ReturnConfirmationDialog(archiveLoan: archiveLoan)),
-                  icon: const Icon(Icons.unarchive_outlined),
-                  label: const Text('Kembali'),
-                  style: TextButton.styleFrom(
-                    foregroundColor: colorScheme.primary,
+                if (archiveLoan.returnedAt == null)
+                  TextButton.icon(
+                    onPressed: () => showDialog(
+                        context: context,
+                        builder: (context) =>
+                            ReturnConfirmationDialog(archiveLoan: archiveLoan)),
+                    icon: const Icon(Icons.unarchive_outlined),
+                    label: const Text('Kembali'),
+                    style: TextButton.styleFrom(
+                      foregroundColor: colorScheme.primary,
+                    ),
                   ),
-                ),
+                if (archiveLoan.returnedAt != null) const Spacer(),
                 TextButton.icon(
                   onPressed: () => context.push(returnArchiveDetailRoute,
                       extra: archiveLoan),
@@ -93,4 +95,3 @@ class ReturnArchiveItem extends StatelessWidget {
     );
   }
 }
-

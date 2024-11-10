@@ -17,6 +17,8 @@ class DeleteArchive extends ArchiveState {}
 
 class BorrowArchive extends ArchiveState {}
 
+class ReturnBorrowedArchive extends ArchiveState {}
+
 class GetArchiveLoading extends GetArchive {}
 
 class GetArchiveLoaded extends GetArchive {
@@ -99,4 +101,18 @@ class GetArchiveLoansError extends GetArchiveLoans {
   final String message;
 
   GetArchiveLoansError({required this.message});
+}
+
+class ReturnBorrowedArchiveLoading extends ReturnBorrowedArchive {}
+
+class ReturnBorrowedArchiveLoaded extends ReturnBorrowedArchive {
+  final String message;
+
+  ReturnBorrowedArchiveLoaded({required this.message});
+}
+
+class ReturnBorrowedArchiveError extends ReturnBorrowedArchive {
+  final String message;
+
+  ReturnBorrowedArchiveError({required this.message});
 }

@@ -18,7 +18,6 @@ class ReturnArchiveDetail extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final dateFormat = DateFormat('dd MMMM yyyy');
-    final returnDate = archiveLoan.borrowedDate.add(const Duration(days: 10));
 
     return Scaffold(
       appBar: AppBar(
@@ -90,14 +89,17 @@ class ReturnArchiveDetail extends StatelessWidget {
                     ArchiveDetailItemInfo(
                       icon: Icons.event,
                       label: 'Tanggal Kembali',
-                      value: dateFormat.format(returnDate),
+                      value: archiveLoan.returnedAt == null
+                          ? '-'
+                          : dateFormat.format(archiveLoan.returnedAt!),
                     ),
                     const SizedBox(height: 12),
                     ArchiveDetailItemInfo(
                       icon: Icons.timer_outlined,
                       label: 'Durasi Peminjaman',
-                      value:
-                          '${returnDate.difference(archiveLoan.borrowedDate).inDays} Hari',
+                      value: archiveLoan.returnedAt == null
+                          ? '-'
+                          : '${archiveLoan.returnedAt?.difference(archiveLoan.borrowedDate).inDays} Hari',
                     ),
                   ],
                 ),
