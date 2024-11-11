@@ -1,4 +1,5 @@
 import 'package:archive_management_system/features/archive/domain/entities/archive_loan_entity.dart';
+import 'package:archive_management_system/features/archive/presentation/pages/report_page.dart';
 import 'package:archive_management_system/features/archive/presentation/pages/return_archive_detail.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -73,7 +74,7 @@ final router = GoRouter(
           routes: <RouteBase>[
             GoRoute(
               path: reportRoute,
-              builder: (context, state) => const LendHistoryPage(),
+              builder: (context, state) => const ReportPage(),
             ),
           ],
         ),
