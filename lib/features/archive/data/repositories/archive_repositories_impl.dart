@@ -19,7 +19,8 @@ class ArchiveRepositoriesImpl extends ArchiveRepositories {
   Future<Either<Failure, List<ArchiveEntity>>> getArchives() async {
     try {
       final result = await archiveRemoteDataSource.getArchives();
-      return Right(result.map(mapArchive).toList());
+      final datas = result.data as List;
+      return Right(datas.map(mapArchive).toList());
     } catch (e) {
       return Left(Failure());
     }
@@ -89,7 +90,8 @@ class ArchiveRepositoriesImpl extends ArchiveRepositories {
   @override
   Future<Either<Failure, List<ArchiveLoanEntity>>> getArchiveLoans() async {
     try {
-      final datas = await archiveRemoteDataSource.getArchiveLoans();
+      final response = await archiveRemoteDataSource.getArchiveLoans();
+      final datas = response.data as List;
 
       return Right(datas.map(mapArchiveLoan).toList());
     } catch (e) {
@@ -120,6 +122,29 @@ class ArchiveRepositoriesImpl extends ArchiveRepositories {
       final datas = await archiveRemoteDataSource.getArchiveLoansByUser(userId);
 
       return Right(datas.map(mapArchiveLoan).toList());
+    } catch (e) {
+      return Left(Failure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, Map<String, dynamic>>> getArchiveStatistics() async {
+    try {
+      final archiveLoansResponse =
+          await archiveRemoteDataSource.getArchiveLoans();
+      final archiveLoansCount =
+          await archiveRemoteDataSource.getBorrowedArchiveLoansCount();
+      final notReturnedArchiveLoans =
+          await archiveRemoteDataSource.getNotReturnedArchiveLoans();
+      final archivesResponse = await archiveRemoteDataSource.getArchives();
+      final archiveLoansTotal = archiveLoansResponse.count;
+
+      return Right({
+        archiveLoansTotalKey: archiveLoansTotal,
+        archiveLoansCountKey: archiveLoansCount,
+        archiveLoansNotReturnedCountKey: notReturnedArchiveLoans.count,
+        archivesCountKey: archivesResponse.count,
+      });
     } catch (e) {
       return Left(Failure());
     }

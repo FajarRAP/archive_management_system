@@ -1,3 +1,4 @@
+import 'package:archive_management_system/features/archive/domain/usecases/get_archive_statistics_use_case.dart';
 import 'package:get_it/get_it.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -52,6 +53,8 @@ void setup() {
               GetArchiveLoansUseCase(archiveRepositories: getIt.get()),
           getArchiveLoansByUserUseCase:
               GetArchiveLoansByUserUseCase(archiveRepositories: getIt.get()),
+          getArchiveStatisticsUseCase:
+              GetArchiveStatisticsUseCase(archiveRepositories: getIt.get()),
           insertArchiveUseCase:
               InsertArchiveUseCase(archiveRepositories: getIt.get()),
           updateArchiveUseCase:

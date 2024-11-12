@@ -74,3 +74,8 @@ const subdistrictsAndUrban = {
     'Siantan Tengah',
   ],
 };
+
+const archiveLoansTotalKey = 'archive_loans_total';
+const archiveLoansCountKey = 'archive_loans_count';
+const archiveLoansNotReturnedCountKey = 'archive_loans_not_returned_count';
+const archivesCountKey = 'archive_count';

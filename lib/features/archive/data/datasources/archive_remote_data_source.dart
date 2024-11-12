@@ -5,8 +5,8 @@ import '../models/archive_loan_model.dart';
 import '../models/archive_model.dart';
 
 abstract class ArchiveRemoteDataSource {
-  Future<List<Map<String, dynamic>>> getArchives();
-  Future<List<Map<String, dynamic>>> getArchiveLoans();
+  Future<PostgrestResponse> getArchives();
+  Future<PostgrestResponse> getArchiveLoans();
   Future<List<Map<String, dynamic>>> getArchiveLoansByUser(String userId);
   Future<List<Map<String, dynamic>>> insertArchive(ArchiveModel archive);
   Future<List<Map<String, dynamic>>> updateArchive(ArchiveModel archive);
@@ -17,6 +17,8 @@ abstract class ArchiveRemoteDataSource {
       String archiveId, String status);
   Future<List<Map<String, dynamic>>> returnBorrowedArchive(
       String archiveLoanId);
+  Future<int> getBorrowedArchiveLoansCount();
+  Future<PostgrestResponse> getNotReturnedArchiveLoans();
 }
 
 class ArchiveRemoteDataSourceImpl extends ArchiveRemoteDataSource {
@@ -25,8 +27,8 @@ class ArchiveRemoteDataSourceImpl extends ArchiveRemoteDataSource {
   ArchiveRemoteDataSourceImpl({required this.supabase});
 
   @override
-  Future<List<Map<String, dynamic>>> getArchives() async {
-    return await supabase.from(archiveTable).select();
+  Future<PostgrestResponse> getArchives() async {
+    return await supabase.from(archiveTable).select().count(CountOption.exact);
   }
 
   @override
@@ -73,9 +75,12 @@ class ArchiveRemoteDataSourceImpl extends ArchiveRemoteDataSource {
   }
 
   @override
-  Future<List<Map<String, dynamic>>> getArchiveLoans() async {
-    return await supabase.from(archiveLoanTable).select(
-        'no_pinjam, archive:no_arsip(*), profile:profile_id(*), tanggal_pinjam, keterangan, created_at, returned_at');
+  Future<PostgrestResponse> getArchiveLoans() async {
+    return await supabase
+        .from(archiveLoanTable)
+        .select(
+            'no_pinjam, archive:no_arsip(*), profile:profile_id(*), tanggal_pinjam, keterangan, created_at, returned_at')
+        .count(CountOption.exact);
   }
 
   @override
@@ -97,5 +102,19 @@ class ArchiveRemoteDataSourceImpl extends ArchiveRemoteDataSource {
         .select(
             'no_pinjam, archive:no_arsip(*), profile:profile_id(*), tanggal_pinjam, keterangan, created_at, returned_at')
         .eq('profile_id', userId);
+  }
+
+  @override
+  Future<int> getBorrowedArchiveLoansCount() async {
+    return await supabase.rpc('select_distinct_archive_loans');
+  }
+
+  @override
+  Future<PostgrestResponse> getNotReturnedArchiveLoans() async {
+    return await supabase
+        .from(archiveLoanTable)
+        .select()
+        .isFilter('returned_at', null)
+        .count(CountOption.exact);
   }
 }

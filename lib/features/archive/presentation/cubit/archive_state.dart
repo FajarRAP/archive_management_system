@@ -9,6 +9,8 @@ class GetArchive extends ArchiveState {}
 
 class GetArchiveLoans extends ArchiveState {}
 
+class GetArchiveStatistics extends ArchiveState {}
+
 class InsertArchive extends ArchiveState {}
 
 class UpdateArchive extends ArchiveState {}
@@ -115,4 +117,18 @@ class ReturnBorrowedArchiveError extends ReturnBorrowedArchive {
   final String message;
 
   ReturnBorrowedArchiveError({required this.message});
+}
+
+class GetArchiveStatisticsLoading extends GetArchiveStatistics {}
+
+class GetArchiveStatisticsLoaded extends GetArchiveStatistics {
+  final Map<String, dynamic> data;
+
+  GetArchiveStatisticsLoaded({required this.data});
+}
+
+class GetArchiveStatisticsError extends GetArchiveStatistics {
+  final String message;
+
+  GetArchiveStatisticsError({required this.message});
 }

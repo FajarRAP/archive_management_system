@@ -2,7 +2,7 @@ import '../../../auth/data/models/profile_model.dart';
 import '../../domain/entities/archive_loan_entity.dart';
 import 'archive_model.dart';
 
-ArchiveLoanModel mapArchiveLoan(Map<String, dynamic> archiveLoan) =>
+ArchiveLoanModel mapArchiveLoan(dynamic archiveLoan) =>
     ArchiveLoanModel.fromJson(archiveLoan);
 
 class ArchiveLoanModel extends ArchiveLoanEntity {
