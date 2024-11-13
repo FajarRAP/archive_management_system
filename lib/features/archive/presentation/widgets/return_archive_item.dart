@@ -45,7 +45,7 @@ class ReturnArchiveItem extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                buildTextBadge(archiveLoan.archive.status),
+                buildTextBadgeArchiveLoan(archiveLoan),
               ],
             ),
             const SizedBox(height: 16),
@@ -71,7 +71,7 @@ class ReturnArchiveItem extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 if (archiveLoan.returnedAt == null &&
-                    authCubit.user?.userMetadata?['is_admin'])
+                    (authCubit.user?.userMetadata?['is_admin'] ?? false))
                   TextButton.icon(
                     onPressed: () => showDialog(
                         context: context,
@@ -84,7 +84,7 @@ class ReturnArchiveItem extends StatelessWidget {
                     ),
                   ),
                 if (archiveLoan.returnedAt != null ||
-                    !authCubit.user?.userMetadata?['is_admin'])
+                    !(authCubit.user?.userMetadata?['is_admin'] ?? true))
                   const Spacer(),
                 TextButton.icon(
                   onPressed: () => context.push(returnArchiveDetailRoute,

@@ -56,7 +56,7 @@ class ReturnArchiveDetail extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 8),
-                buildTextBadge(archiveLoan.archive.status),
+                buildTextBadgeArchiveLoan(archiveLoan),
               ],
             ),
           ),

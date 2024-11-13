@@ -1,11 +1,32 @@
-import 'package:archive_management_system/features/archive/presentation/cubit/archive_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' as s;
 
 import '../../../../core/common/constants.dart';
+import '../../../../dependency_injection.dart';
+import '../../../auth/presentation/cubit/auth_cubit.dart';
+import '../cubit/archive_cubit.dart';
+import '../widgets/activity_item.dart';
+import '../widgets/return_archive_item.dart';
+import '../widgets/statistics_card.dart';
 
 class ReportPage extends StatelessWidget {
   const ReportPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final bool isAdmin = getIt
+            .get<s.SupabaseClient>()
+            .auth
+            .currentUser
+            ?.userMetadata?['is_admin'] ??
+        false;
+    return isAdmin ? const _AdminPage() : const _UserPage();
+  }
+}
+
+class _AdminPage extends StatelessWidget {
+  const _AdminPage();
 
   @override
   Widget build(BuildContext context) {
@@ -42,37 +63,33 @@ class ReportPage extends StatelessWidget {
                       ),
                       const SizedBox(height: 16),
                       GridView.count(
-                        crossAxisCount: 2,
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        mainAxisSpacing: 16,
-                        crossAxisSpacing: 16,
                         childAspectRatio: 1.25,
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 16,
+                        mainAxisSpacing: 16,
+                        physics: const NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
                         children: [
-                          _buildStatCard(
+                          StatisticsCard(
                             title: 'Total Peminjaman',
                             value: '${state.data[archiveLoansTotalKey]}',
                             icon: Icons.book_rounded,
-                            colorScheme: colorScheme,
                           ),
-                          _buildStatCard(
+                          StatisticsCard(
                             title: 'Arsip Dipinjam',
                             value: '${state.data[archiveLoansCountKey]}',
                             icon: Icons.inventory_2_rounded,
-                            colorScheme: colorScheme,
                           ),
-                          _buildStatCard(
+                          StatisticsCard(
                             title: 'Belum Dikembalikan',
                             value:
                                 '${state.data[archiveLoansNotReturnedCountKey]}',
                             icon: Icons.pending_actions_rounded,
-                            colorScheme: colorScheme,
                           ),
-                          _buildStatCard(
+                          StatisticsCard(
                             title: 'Total Arsip',
                             value: '${state.data[archivesCountKey]}',
                             icon: Icons.archive_rounded,
-                            colorScheme: colorScheme,
                           ),
                         ],
                       ),
@@ -93,25 +110,19 @@ class ReportPage extends StatelessWidget {
                       const SizedBox(height: 16),
                       Card(
                         elevation: 0,
-                        color: colorScheme.surfaceVariant.withOpacity(0.1),
+                        color: colorScheme.surface.withOpacity(0.1),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: ListView.separated(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: 5,
-                          itemBuilder: (context, index) {
-                            return _buildActivityItem(
-                              title: 'Peminjaman Arsip #A12345',
-                              subtitle: 'Diajukan oleh John Doe',
-                              time: '2 jam yang lalu',
-                              icon: Icons.book_rounded,
-                              colorScheme: colorScheme,
-                            );
-                          },
+                          itemBuilder: (context, index) => ActivityItem(
+                            archiveLoan: state.data[archiveLoansDataKey][index],
+                          ),
                           separatorBuilder: (context, index) =>
                               const SizedBox(height: 12),
+                          itemCount: state.data[archiveLoansDataKey].length,
+                          physics: const NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
                         ),
                       ),
                     ],
@@ -126,80 +137,53 @@ class ReportPage extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget _buildStatCard({
-    required String title,
-    required String value,
-    required IconData icon,
-    required ColorScheme colorScheme,
-  }) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: cardBoxShadow,
-        color: colorScheme.surface,
-      ),
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: colorScheme.primary.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(icon, color: colorScheme.primary, size: 20),
-          ),
-          const Spacer(),
-          Text(
-            value,
-            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w700),
-          ),
-          const SizedBox(height: 4),
-          Text(title),
-        ],
-      ),
-    );
-  }
+class _UserPage extends StatelessWidget {
+  const _UserPage();
 
-  Widget _buildActivityItem({
-    required String title,
-    required String subtitle,
-    required String time,
-    required IconData icon,
-    required ColorScheme colorScheme,
-  }) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(6),
-        boxShadow: cardBoxShadow,
-        color: colorScheme.surface,
-      ),
-      child: ListTile(
-        contentPadding: const EdgeInsets.all(16),
-        leading: Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: colorScheme.primary.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Icon(icon, color: colorScheme.primary),
-        ),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 4),
-            Text(subtitle),
-            const SizedBox(height: 4),
-            Text(time, style: TextStyle(fontSize: 12)),
-          ],
-        ),
-        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-        trailing: IconButton(
-          icon: const Icon(Icons.arrow_forward_ios_rounded),
-          onPressed: () {
-            // Navigate to detail
+  @override
+  Widget build(BuildContext context) {
+    final archiveCubit = context.read<ArchiveCubit>();
+    final authCubit = context.read<AuthCubit>();
+
+    return Scaffold(
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: BlocBuilder<ArchiveCubit, ArchiveState>(
+          bloc: archiveCubit
+            ..getArchiveLoansByUser(userId: '${authCubit.userProfile.id}'),
+          buildWhen: (previous, current) => current is GetArchiveLoans,
+          builder: (context, state) {
+            if (state is GetArchiveLoansLoading) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            if (state is GetArchiveLoansLoaded) {
+              return Column(
+                children: [
+                  TextFormField(
+                    decoration: InputDecoration(
+                      hintText: 'Cari',
+                      prefixIcon: const Icon(Icons.search),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Expanded(
+                    child: ListView.separated(
+                      itemBuilder: (context, index) => ReturnArchiveItem(
+                          archiveLoan: state.archiveLoans[index]),
+                      separatorBuilder: (context, index) =>
+                          const SizedBox(height: 12),
+                      itemCount: state.archiveLoans.length,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                    ),
+                  ),
+                ],
+              );
+            }
+
+            return const SizedBox();
           },
         ),
       ),

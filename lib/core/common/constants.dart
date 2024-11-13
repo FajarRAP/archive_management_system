@@ -77,5 +77,6 @@ const subdistrictsAndUrban = {
 
 const archiveLoansTotalKey = 'archive_loans_total';
 const archiveLoansCountKey = 'archive_loans_count';
+const archiveLoansDataKey = 'archive_loans_data';
 const archiveLoansNotReturnedCountKey = 'archive_loans_not_returned_count';
 const archivesCountKey = 'archive_count';

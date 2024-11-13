@@ -92,7 +92,7 @@ class ArchiveRepositoriesImpl extends ArchiveRepositories {
     try {
       final response = await archiveRemoteDataSource.getArchiveLoans();
       final datas = response.data as List;
-
+      print(datas);
       return Right(datas.map(mapArchiveLoan).toList());
     } catch (e) {
       return Left(Failure());
@@ -137,15 +137,22 @@ class ArchiveRepositoriesImpl extends ArchiveRepositories {
       final notReturnedArchiveLoans =
           await archiveRemoteDataSource.getNotReturnedArchiveLoans();
       final archivesResponse = await archiveRemoteDataSource.getArchives();
+      final archiveLoansOrderByBorrowedTime =
+          await archiveRemoteDataSource.getArchiveLoansOrderByBorrowedTime();
       final archiveLoansTotal = archiveLoansResponse.count;
+      print(archiveLoansOrderByBorrowedTime);
 
       return Right({
         archiveLoansTotalKey: archiveLoansTotal,
         archiveLoansCountKey: archiveLoansCount,
         archiveLoansNotReturnedCountKey: notReturnedArchiveLoans.count,
         archivesCountKey: archivesResponse.count,
+        archiveLoansDataKey:
+            archiveLoansOrderByBorrowedTime.map(mapArchiveLoan).toList(),
       });
     } catch (e) {
+      print(e);
+
       return Left(Failure());
     }
   }

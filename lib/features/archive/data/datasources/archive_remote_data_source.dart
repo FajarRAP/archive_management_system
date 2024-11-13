@@ -19,6 +19,7 @@ abstract class ArchiveRemoteDataSource {
       String archiveLoanId);
   Future<int> getBorrowedArchiveLoansCount();
   Future<PostgrestResponse> getNotReturnedArchiveLoans();
+  Future<List<Map<String, dynamic>>> getArchiveLoansOrderByBorrowedTime();
 }
 
 class ArchiveRemoteDataSourceImpl extends ArchiveRemoteDataSource {
@@ -116,5 +117,16 @@ class ArchiveRemoteDataSourceImpl extends ArchiveRemoteDataSource {
         .select()
         .isFilter('returned_at', null)
         .count(CountOption.exact);
+  }
+
+  @override
+  Future<List<Map<String, dynamic>>>
+      getArchiveLoansOrderByBorrowedTime() async {
+    return await supabase
+        .from(archiveLoanTable)
+        .select(
+            'no_pinjam, archive:no_arsip(*), profile:profile_id(*), tanggal_pinjam, keterangan, created_at, returned_at')
+        .order('created_at')
+        .limit(5);
   }
 }

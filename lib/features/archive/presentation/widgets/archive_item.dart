@@ -59,7 +59,7 @@ class ArchiveItem extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 4),
-                      buildTextBadge(archive.status),
+                      buildTextBadgeArchive(archive),
                     ],
                   ),
                 ),
