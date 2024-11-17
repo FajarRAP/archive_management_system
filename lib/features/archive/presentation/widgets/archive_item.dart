@@ -63,7 +63,7 @@ class ArchiveItem extends StatelessWidget {
                     ],
                   ),
                 ),
-                if (user?.userMetadata?['is_admin'])
+                if (user?.userMetadata?['is_admin'] ?? false)
                   IconButton(
                     icon: Icon(Icons.edit_rounded, color: colorScheme.primary),
                     style: IconButton.styleFrom(
@@ -91,7 +91,7 @@ class ArchiveItem extends StatelessWidget {
               value: archive.urban,
             ),
             const SizedBox(height: 12),
-            if (!user?.userMetadata?['is_admin'])
+            if (!(user?.userMetadata?['is_admin'] ?? true))
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [

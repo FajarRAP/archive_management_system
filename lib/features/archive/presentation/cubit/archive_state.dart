@@ -21,6 +21,8 @@ class BorrowArchive extends ArchiveState {}
 
 class ReturnBorrowedArchive extends ArchiveState {}
 
+class DownloadArchiveReport extends ArchiveState {}
+
 class GetArchiveLoading extends GetArchive {}
 
 class GetArchiveLoaded extends GetArchive {
@@ -131,4 +133,18 @@ class GetArchiveStatisticsError extends GetArchiveStatistics {
   final String message;
 
   GetArchiveStatisticsError({required this.message});
+}
+
+class DownloadArchiveReportLoading extends DownloadArchiveReport {}
+
+class DownloadArchiveReportLoaded extends DownloadArchiveReport {
+  final String message;
+
+  DownloadArchiveReportLoaded({required this.message});
+}
+
+class DownloadArchiveReportError extends DownloadArchiveReport {
+  final String message;
+
+  DownloadArchiveReportError({required this.message});
 }

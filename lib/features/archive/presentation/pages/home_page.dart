@@ -24,12 +24,22 @@ class HomePage extends StatelessWidget {
       bloc: authCubit..getCurrentUser(),
       buildWhen: (previous, current) => current is ProfileState,
       builder: (context, state) {
-        return Scaffold(
-          appBar: AppBar(
-            title: Text('Hai, ${authCubit.user?.userMetadata?['name']}'),
-          ),
-          body: user.userMetadata?['is_admin'] ? _AdminPage() : _UserPage(),
-        );
+        if (state is ProfileLoading) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (state is ProfileLoaded) {
+          return Scaffold(
+            appBar: AppBar(
+                title: Text(
+                    'Hai, ${user.userMetadata?['name'] ?? authCubit.userProfile.name}')),
+            body: (user.userMetadata?['is_admin'] ?? false)
+                ? const _AdminPage()
+                : const _UserPage(),
+          );
+        }
+
+        return const SizedBox();
       },
     );
   }
@@ -77,7 +87,7 @@ class _AdminPage extends StatelessWidget {
                     icon: Icons.assignment_return,
                     route: returnArchiveRoute,
                   ),
-              ],
+                ],
               ),
             ),
           ),

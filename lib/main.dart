@@ -12,7 +12,7 @@ import 'features/auth/presentation/cubit/auth_cubit.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   await dotenv.load(fileName: '.env');
   await Supabase.initialize(
     url: dotenv.get('SUPA_URL'),

@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as s;
 
 import '../../../../core/common/constants.dart';
+import '../../../../core/common/snack_bar.dart';
 import '../../../../dependency_injection.dart';
 import '../../../auth/presentation/cubit/auth_cubit.dart';
+import '../../domain/entities/archive_loan_entity.dart';
 import '../cubit/archive_cubit.dart';
 import '../widgets/activity_item.dart';
 import '../widgets/return_archive_item.dart';
@@ -33,107 +36,149 @@ class _AdminPage extends StatelessWidget {
     final archiveCubit = context.read<ArchiveCubit>();
     final colorScheme = Theme.of(context).colorScheme;
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('Laporan')),
-      body: BlocBuilder<ArchiveCubit, ArchiveState>(
-        bloc: archiveCubit..getArchiveStatistics(),
-        buildWhen: (previous, current) => current is GetArchiveStatistics,
-        builder: (context, state) {
-          if (state is GetArchiveStatisticsLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
+    return BlocListener<ArchiveCubit, ArchiveState>(
+      listenWhen: (previous, current) => current is DownloadArchiveReport,
+      listener: (context, state) {
+        if (state is DownloadArchiveReportLoaded) {
+          return showSnackBar(message: state.message);
+        }
 
-          if (state is GetArchiveStatisticsLoaded) {
-            return RefreshIndicator(
-              onRefresh: archiveCubit.getArchiveStatistics,
-              displacement: 10,
-              child: ListView(
-                padding: const EdgeInsets.all(16),
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Statistik',
-                        style: TextStyle(
-                          color: colorScheme.primary,
-                          fontSize: 20,
-                          fontWeight: FontWeight.w700,
+        if (state is DownloadArchiveReportError) {
+          return showSnackBar(message: state.message);
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          actions: [
+            BlocBuilder<ArchiveCubit, ArchiveState>(
+              buildWhen: (previous, current) => current is GetArchiveStatistics,
+              builder: (context, state) {
+                if (state is GetArchiveStatisticsLoaded) {
+                  return IconButton(
+                    onPressed: () async {
+                      await Permission.manageExternalStorage
+                          .onDeniedCallback(() async =>
+                              await Permission.manageExternalStorage.request())
+                          .request();
+
+                      final List<ArchiveLoanEntity> archiveLoans =
+                          state.data[archiveLoansDataKey];
+
+                      await archiveCubit.downloadArchiveReport(
+                          archiveLoans: archiveLoans);
+                    },
+                    tooltip: 'Unduh Laporan',
+                    icon: const Icon(Icons.download_rounded),
+                  );
+                }
+
+                return const SizedBox();
+              },
+            )
+          ],
+          title: const Text('Laporan'),
+        ),
+        body: BlocBuilder<ArchiveCubit, ArchiveState>(
+          bloc: archiveCubit..getArchiveStatistics(),
+          buildWhen: (previous, current) => current is GetArchiveStatistics,
+          builder: (context, state) {
+            if (state is GetArchiveStatisticsLoading) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            if (state is GetArchiveStatisticsLoaded) {
+              return RefreshIndicator(
+                onRefresh: archiveCubit.getArchiveStatistics,
+                displacement: 10,
+                child: ListView(
+                  padding: const EdgeInsets.all(16),
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Statistik',
+                          style: TextStyle(
+                            color: colorScheme.primary,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 16),
-                      GridView.count(
-                        childAspectRatio: 1.25,
-                        crossAxisCount: 2,
-                        crossAxisSpacing: 16,
-                        mainAxisSpacing: 16,
-                        physics: const NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        children: [
-                          StatisticsCard(
-                            title: 'Total Peminjaman',
-                            value: '${state.data[archiveLoansTotalKey]}',
-                            icon: Icons.book_rounded,
-                          ),
-                          StatisticsCard(
-                            title: 'Arsip Dipinjam',
-                            value: '${state.data[archiveLoansCountKey]}',
-                            icon: Icons.inventory_2_rounded,
-                          ),
-                          StatisticsCard(
-                            title: 'Belum Dikembalikan',
-                            value:
-                                '${state.data[archiveLoansNotReturnedCountKey]}',
-                            icon: Icons.pending_actions_rounded,
-                          ),
-                          StatisticsCard(
-                            title: 'Total Arsip',
-                            value: '${state.data[archivesCountKey]}',
-                            icon: Icons.archive_rounded,
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 24),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Aktivitas Terbaru',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: colorScheme.primary,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      Card(
-                        elevation: 0,
-                        color: colorScheme.surface.withOpacity(0.1),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: ListView.separated(
-                          itemBuilder: (context, index) => ActivityItem(
-                            archiveLoan: state.data[archiveLoansDataKey][index],
-                          ),
-                          separatorBuilder: (context, index) =>
-                              const SizedBox(height: 12),
-                          itemCount: state.data[archiveLoansDataKey].length,
+                        const SizedBox(height: 16),
+                        GridView.count(
+                          childAspectRatio: 1.25,
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 16,
+                          mainAxisSpacing: 16,
                           physics: const NeverScrollableScrollPhysics(),
                           shrinkWrap: true,
+                          children: [
+                            StatisticsCard(
+                              title: 'Total Peminjaman',
+                              value: '${state.data[archiveLoansTotalKey]}',
+                              icon: Icons.book_rounded,
+                            ),
+                            StatisticsCard(
+                              title: 'Arsip Dipinjam',
+                              value: '${state.data[archiveLoansCountKey]}',
+                              icon: Icons.inventory_2_rounded,
+                            ),
+                            StatisticsCard(
+                              title: 'Belum Dikembalikan',
+                              value:
+                                  '${state.data[archiveLoansNotReturnedCountKey]}',
+                              icon: Icons.pending_actions_rounded,
+                            ),
+                            StatisticsCard(
+                              title: 'Total Arsip',
+                              value: '${state.data[archivesCountKey]}',
+                              icon: Icons.archive_rounded,
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            );
-          }
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Aktivitas Terbaru',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: colorScheme.primary,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        Card(
+                          elevation: 0,
+                          color: colorScheme.surface.withOpacity(0.1),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: ListView.separated(
+                            itemBuilder: (context, index) => ActivityItem(
+                              archiveLoan: state.data[archiveLoansDataKey]
+                                  [index],
+                            ),
+                            separatorBuilder: (context, index) =>
+                                const SizedBox(height: 12),
+                            itemCount: state.data[archiveLoansDataKey].length,
+                            physics: const NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              );
+            }
 
-          return const SizedBox();
-        },
+            return const SizedBox();
+          },
+        ),
       ),
     );
   }

@@ -1,3 +1,4 @@
+import 'package:archive_management_system/features/archive/domain/usecases/download_archive_report_use_case.dart';
 import 'package:archive_management_system/features/archive/domain/usecases/get_archive_statistics_use_case.dart';
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
@@ -26,6 +27,7 @@ class ArchiveCubit extends Cubit<ArchiveState> {
     required this.borrowArchiveUseCase,
     required this.returnBorrowedArchiveUseCase,
     required this.getArchiveStatisticsUseCase,
+    required this.downloadArchiveReportUseCase,
   }) : super(ArchiveInitial());
 
   final GetArchivesUseCase getArchivesUseCase;
@@ -37,6 +39,7 @@ class ArchiveCubit extends Cubit<ArchiveState> {
   final BorrowArchiveUseCase borrowArchiveUseCase;
   final ReturnBorrowedArchiveUseCase returnBorrowedArchiveUseCase;
   final GetArchiveStatisticsUseCase getArchiveStatisticsUseCase;
+  final DownloadArchiveReportUseCase downloadArchiveReportUseCase;
 
   Future<void> getArchive() async {
     emit(GetArchiveLoading());
@@ -135,6 +138,17 @@ class ArchiveCubit extends Cubit<ArchiveState> {
     result.fold(
       (l) => emit(GetArchiveStatisticsError(message: l.message)),
       (r) => emit(GetArchiveStatisticsLoaded(data: r)),
+    );
+  }
+
+  Future<void> downloadArchiveReport(
+      {required List<ArchiveLoanEntity> archiveLoans}) async {
+    emit(DownloadArchiveReportLoading());
+    final result = await downloadArchiveReportUseCase(archiveLoans);
+
+    result.fold(
+      (l) => emit(DownloadArchiveReportError(message: l.message)),
+      (r) => emit(DownloadArchiveReportLoaded(message: r)),
     );
   }
 }
