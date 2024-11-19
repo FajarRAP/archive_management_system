@@ -24,6 +24,9 @@ class ReturnArchivePage extends StatelessWidget {
             }
 
             if (state is GetArchiveLoansLoaded) {
+              final archiveLoans = state.archiveLoans
+                  .where((archiveLoan) => archiveLoan.returnedAt == null)
+                  .toList();
               return RefreshIndicator(
                 onRefresh: archiveCubit.getArchiveLoans,
                 displacement: 10,
@@ -38,11 +41,11 @@ class ReturnArchivePage extends StatelessWidget {
                     const SizedBox(height: 16),
                     Expanded(
                       child: ListView.separated(
-                        itemBuilder: (context, index) => ReturnArchiveItem(
-                            archiveLoan: state.archiveLoans[index]),
+                        itemBuilder: (context, index) =>
+                            ReturnArchiveItem(archiveLoan: archiveLoans[index]),
                         separatorBuilder: (context, index) =>
                             const SizedBox(height: 12),
-                        itemCount: state.archiveLoans.length,
+                        itemCount: archiveLoans.length,
                       ),
                     ),
                   ],
