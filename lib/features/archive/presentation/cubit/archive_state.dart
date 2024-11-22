@@ -25,17 +25,17 @@ class DownloadArchiveReport extends ArchiveState {}
 
 class GetArchiveLoading extends GetArchive {}
 
-class GetArchiveLoaded extends GetArchive {
-  final List<ArchiveEntity> archives;
-
-  GetArchiveLoaded(this.archives);
-}
+class GetArchiveLoaded extends GetArchive {}
 
 class GetArchiveError extends GetArchive {
   final String message;
 
   GetArchiveError({required this.message});
 }
+
+class FilterArchiveBySubdistrict extends GetArchive {}
+
+class FilterArchiveByUrban extends GetArchive {}
 
 class InsertArchiveLoading extends InsertArchive {}
 
@@ -95,11 +95,7 @@ class BorrowArchiveError extends BorrowArchive {
 
 class GetArchiveLoansLoading extends GetArchiveLoans {}
 
-class GetArchiveLoansLoaded extends GetArchiveLoans {
-  final List<ArchiveLoanEntity> archiveLoans;
-
-  GetArchiveLoansLoaded(this.archiveLoans);
-}
+class GetArchiveLoansLoaded extends GetArchiveLoans {}
 
 class GetArchiveLoansError extends GetArchiveLoans {
   final String message;

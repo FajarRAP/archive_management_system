@@ -18,6 +18,7 @@ Future<void> main() async {
     url: dotenv.get('SUPA_URL'),
     anonKey: dotenv.get('SUPA_KEY'),
   );
+
   setup();
   runApp(const MyApp());
 }

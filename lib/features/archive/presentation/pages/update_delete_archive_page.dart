@@ -22,28 +22,25 @@ class UpdateDeleteArchivePage extends StatefulWidget {
 }
 
 class _UpdateDeleteArchivePageState extends State<UpdateDeleteArchivePage> {
-  late final TextEditingController _archiveController;
-  late final TextEditingController _subdistrictController;
-  late final TextEditingController _urbanController;
-  late String _archiveStatus;
   final _formKey = GlobalKey<FormState>();
+  late final TextEditingController _archiveController;
+  late String _archiveStatus;
+  String? _selectedSubdistrict;
+  String? _selectedUrban;
 
   @override
   void initState() {
     _archiveController =
         TextEditingController(text: '${widget.archive.archiveNumber}');
-    _subdistrictController =
-        TextEditingController(text: widget.archive.subdistrict);
-    _urbanController = TextEditingController(text: widget.archive.urban);
     _archiveStatus = widget.archive.status;
+    _selectedSubdistrict = widget.archive.subdistrict;
+    _selectedUrban = widget.archive.urban;
     super.initState();
   }
 
   @override
   void dispose() {
     _archiveController.dispose();
-    _subdistrictController.dispose();
-    _urbanController.dispose();
     super.dispose();
   }
 
@@ -71,7 +68,7 @@ class _UpdateDeleteArchivePageState extends State<UpdateDeleteArchivePage> {
                 ),
                 content: Text(
                   'Apakah anda yakin ingin menghapus arsip nomor ${widget.archive.archiveNumber}?',
-                  style: TextStyle(fontSize: 16),
+                  style: const TextStyle(fontSize: 16),
                 ),
                 actions: [
                   TextButton(
@@ -110,11 +107,8 @@ class _UpdateDeleteArchivePageState extends State<UpdateDeleteArchivePage> {
                         );
                       }
                       return ElevatedButton(
-                        onPressed: () async {
-                          await archiveCubit.deleteArchive(
-                            archiveId: '${widget.archive.archiveNumber}',
-                          );
-                        },
+                        onPressed: () async => await archiveCubit.deleteArchive(
+                            archiveId: '${widget.archive.archiveNumber}'),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: colorScheme.error,
                           foregroundColor: Colors.white,
@@ -189,52 +183,55 @@ class _UpdateDeleteArchivePageState extends State<UpdateDeleteArchivePage> {
                         decoration: InputDecoration(
                           labelText: 'Nomor Arsip',
                           hintText: 'Masukkan nomor arsip',
-                          prefixIcon: Icon(Icons.numbers_rounded),
+                          prefixIcon: const Icon(Icons.numbers_rounded),
                         ),
                         readOnly: true,
                         validator: validate,
                       ),
                       const SizedBox(height: 20),
-                      TextFormField(
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                        controller: _subdistrictController,
-                        decoration: InputDecoration(
-                          labelText: 'Kecamatan',
-                          hintText: 'Masukkan nama kecamatan',
-                          prefixIcon: Icon(Icons.location_city_rounded),
-                        ),
-                        validator: validate,
-                      ),
-                      const SizedBox(height: 20),
-                      TextFormField(
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                        controller: _urbanController,
-                        decoration: InputDecoration(
-                          labelText: 'Kelurahan',
-                          hintText: 'Masukkan nama kelurahan',
-                          prefixIcon: Icon(Icons.apartment_rounded),
-                        ),
-                        validator: validate,
-                      ),
-                      const SizedBox(height: 20),
                       DropdownButtonFormField<String>(
-                        onChanged: (value) => _archiveStatus = value ?? '',
+                        onChanged: (value) {
+                          if (value != _selectedSubdistrict) {
+                            _selectedUrban = null;
+                          }
+                          setState(() => _selectedSubdistrict = value);
+                        },
+                        decoration: InputDecoration(
+                          hintText: 'Kecamatan',
+                          label: const Text('Kecamatan'),
+                          prefixIcon: const Icon(Icons.location_city_rounded),
+                        ),
+                        value: _selectedSubdistrict,
+                        items: subdistrictsAndUrban.entries
+                            .map((subdistrict) => DropdownMenuItem<String>(
+                                value: subdistrict.key,
+                                child: Text(subdistrict.key)))
+                            .toList(),
+                      ),
+                      const SizedBox(height: 16),
+                      DropdownButtonFormField<String>(
+                        onChanged: (value) =>
+                            setState(() => _selectedUrban = value),
+                        decoration: InputDecoration(
+                          hintText: 'Kelurahan',
+                          label: const Text('Kelurahan'),
+                          prefixIcon: const Icon(Icons.apartment_rounded),
+                        ),
+                        value: _selectedUrban,
+                        items: _items(),
+                      ),
+                      const SizedBox(height: 16),
+                      DropdownButtonFormField<String>(
+                        onChanged: (value) => _archiveStatus = '$value',
                         autovalidateMode: AutovalidateMode.onUserInteraction,
-                        items: statusOptions.map((status) {
-                          return DropdownMenuItem<String>(
-                            value: status,
-                            child: Text(status),
-                          );
-                        }).toList(),
+                        items: statusOptions
+                            .map((status) => DropdownMenuItem<String>(
+                                value: status, child: Text(status)))
+                            .toList(),
                         decoration: InputDecoration(
                           label: const Text('Status Arsip'),
                           hintText: 'Pilih status',
-                          prefixIcon: Icon(Icons.inventory_2_rounded),
-                        ),
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w400,
+                          prefixIcon: const Icon(Icons.inventory_2_rounded),
                         ),
                         validator: validate,
                         value: _archiveStatus,
@@ -252,6 +249,7 @@ class _UpdateDeleteArchivePageState extends State<UpdateDeleteArchivePage> {
                       if (state is UpdateArchiveError) {
                         return showSnackBar(message: state.message);
                       }
+
                       if (state is UpdateArchiveLoaded) {
                         archiveCubit.getArchive();
                         return showSnackBar(message: state.message);
@@ -261,7 +259,6 @@ class _UpdateDeleteArchivePageState extends State<UpdateDeleteArchivePage> {
                       if (state is UpdateArchiveLoading) {
                         return FilledButton(
                           onPressed: null,
-                          style: FilledButton.styleFrom(elevation: 2),
                           child: const CircularProgressIndicator(
                             strokeWidth: 2,
                             valueColor: AlwaysStoppedAnimation(Colors.white),
@@ -273,13 +270,10 @@ class _UpdateDeleteArchivePageState extends State<UpdateDeleteArchivePage> {
                         onPressed: () async {
                           if (!_formKey.currentState!.validate()) return;
 
-                          final subdistrict =
-                              _subdistrictController.text.trim();
-                          final urban = _urbanController.text.trim();
                           final archive = ArchiveEntity(
                               archiveNumber: widget.archive.archiveNumber,
-                              subdistrict: subdistrict,
-                              urban: urban,
+                              subdistrict: _selectedSubdistrict!,
+                              urban: _selectedUrban!,
                               status: _archiveStatus);
 
                           await archiveCubit.updateArchive(archive: archive);
@@ -290,7 +284,7 @@ class _UpdateDeleteArchivePageState extends State<UpdateDeleteArchivePage> {
                           'Simpan Perubahan',
                           style: TextStyle(
                             fontSize: 16,
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.w700,
                           ),
                         ),
                       );
@@ -303,5 +297,16 @@ class _UpdateDeleteArchivePageState extends State<UpdateDeleteArchivePage> {
         ),
       ),
     );
+  }
+
+  List<DropdownMenuItem<String>> _items() {
+    if (_selectedSubdistrict == null || _selectedSubdistrict!.isEmpty) {
+      return [];
+    }
+
+    return subdistrictsAndUrban[_selectedSubdistrict]!
+        .map((urban) =>
+            DropdownMenuItem<String>(value: urban, child: Text(urban)))
+        .toList();
   }
 }

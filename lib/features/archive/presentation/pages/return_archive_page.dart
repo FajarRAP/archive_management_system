@@ -24,9 +24,10 @@ class ReturnArchivePage extends StatelessWidget {
             }
 
             if (state is GetArchiveLoansLoaded) {
-              final archiveLoans = state.archiveLoans
+              final archiveLoans = archiveCubit.archiveLoans
                   .where((archiveLoan) => archiveLoan.returnedAt == null)
                   .toList();
+                  
               return RefreshIndicator(
                 onRefresh: archiveCubit.getArchiveLoans,
                 displacement: 10,

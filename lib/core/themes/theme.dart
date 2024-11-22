@@ -9,6 +9,7 @@ final theme = ThemeData(
     tertiary: const Color(0xFF3D0301),
   ),
   inputDecorationTheme: const InputDecorationTheme(
+    prefixIconColor: Color(0xFF7ED4AD),
     border: OutlineInputBorder(
       borderRadius: BorderRadius.all(Radius.circular(8)),
     ),
@@ -22,6 +23,7 @@ final theme = ThemeData(
   ),
   dropdownMenuTheme: const DropdownMenuThemeData(
     inputDecorationTheme: InputDecorationTheme(
+      prefixIconColor: Color(0xFF7ED4AD),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.all(Radius.circular(8)),
       ),
@@ -32,6 +34,11 @@ final theme = ThemeData(
       filled: true,
       fillColor: Color(0xFFFAFAFA),
       hintStyle: TextStyle(color: Color(0xFFBDBDBD)),
+    ),
+    textStyle: TextStyle(
+      color: Colors.black,
+      fontSize: 16,
+      fontWeight: FontWeight.w400,
     ),
   ),
   useMaterial3: true,

@@ -1,8 +1,8 @@
-import 'package:archive_management_system/core/common/snack_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/common/constants.dart';
+import '../../../../core/common/snack_bar.dart';
 import '../../../../core/helpers/validation.dart';
 import '../../domain/entities/archive_entity.dart';
 import '../cubit/archive_cubit.dart';
@@ -19,6 +19,8 @@ class _AddArchivePageState extends State<AddArchivePage> {
   final _urbanController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   var archiveStatus = '';
+  String? _selectedSubdistrict;
+  String? _selectedUrban;
 
   @override
   void dispose() {
@@ -58,7 +60,7 @@ class _AddArchivePageState extends State<AddArchivePage> {
                 Center(
                   child: Container(
                     decoration: BoxDecoration(
-                      color: colorScheme.primary.withOpacity(0.25),
+                      color: colorScheme.primary.withOpacity(0.15),
                       shape: BoxShape.circle,
                     ),
                     padding: const EdgeInsets.all(16),
@@ -88,46 +90,49 @@ class _AddArchivePageState extends State<AddArchivePage> {
                         ),
                       ),
                       const SizedBox(height: 20),
-                      TextFormField(
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                        controller: _subdistrictController,
+                      DropdownButtonFormField<String>(
+                        onChanged: (value) {
+                          if (value != _selectedSubdistrict) {
+                            _selectedUrban = null;
+                          }
+                          setState(() => _selectedSubdistrict = value);
+                        },
                         decoration: InputDecoration(
-                          labelText: 'Kecamatan',
-                          hintText: 'Masukkan nama kecamatan',
-                          prefixIcon: Icon(Icons.location_city_rounded),
+                          hintText: 'Kecamatan',
+                          label: const Text('Kecamatan'),
+                          prefixIcon: const Icon(Icons.location_city_rounded),
                         ),
-                        validator: validate,
+                        value: _selectedSubdistrict,
+                        items: subdistrictsAndUrban.entries
+                            .map((subdistrict) => DropdownMenuItem<String>(
+                                value: subdistrict.key,
+                                child: Text(subdistrict.key)))
+                            .toList(),
                       ),
-                      const SizedBox(height: 20),
-                      TextFormField(
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                        controller: _urbanController,
+                      const SizedBox(height: 16),
+                      DropdownButtonFormField<String>(
+                        onChanged: (value) =>
+                            setState(() => _selectedUrban = value),
                         decoration: InputDecoration(
-                          labelText: 'Kelurahan',
-                          hintText: 'Masukkan nama kelurahan',
-                          prefixIcon: Icon(Icons.apartment_rounded),
+                          hintText: 'Kelurahan',
+                          label: const Text('Kelurahan'),
+                          prefixIcon: const Icon(Icons.apartment_rounded),
                         ),
-                        validator: validate,
+                        value: _selectedUrban,
+                        items: _items(),
                       ),
                       const SizedBox(height: 20),
                       DropdownButtonFormField<String>(
-                        onChanged: (value) => archiveStatus = value ?? '',
+                        onChanged: (value) => archiveStatus = '$value',
                         autovalidateMode: AutovalidateMode.onUserInteraction,
-                        items: statusOptions.map((status) {
-                          return DropdownMenuItem<String>(
-                            value: status,
-                            child: Text(status),
-                          );
-                        }).toList(),
+                        items: statusOptions
+                            .map((status) => DropdownMenuItem<String>(
+                                value: status, child: Text(status)))
+                            .toList(),
                         decoration: InputDecoration(
                           label: const Text('Status Arsip'),
                           hintText: 'Pilih status',
-                          prefixIcon: Icon(Icons.inventory_2_rounded),
-                        ),
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w400,
+                          prefixIcon: const Icon(Icons.inventory_2_rounded),
                         ),
                         validator: validate,
                       ),
@@ -153,7 +158,6 @@ class _AddArchivePageState extends State<AddArchivePage> {
                       if (state is InsertArchiveLoading) {
                         return FilledButton(
                           onPressed: null,
-                          style: FilledButton.styleFrom(elevation: 2),
                           child: const CircularProgressIndicator(
                             strokeWidth: 2,
                             valueColor: AlwaysStoppedAnimation(Colors.white),
@@ -165,12 +169,16 @@ class _AddArchivePageState extends State<AddArchivePage> {
                         onPressed: () async {
                           if (!_formKey.currentState!.validate()) return;
 
-                          final subdistrict =
-                              _subdistrictController.text.trim();
-                          final urban = _urbanController.text.trim();
+                          if (_selectedSubdistrict == null ||
+                              _selectedSubdistrict!.isEmpty) return;
+                          if (_selectedUrban == null ||
+                              _selectedUrban!.isEmpty) {
+                            return;
+                          }
+
                           final archive = ArchiveEntity(
-                              subdistrict: subdistrict,
-                              urban: urban,
+                              subdistrict: _selectedSubdistrict!,
+                              urban: _selectedUrban!,
                               status: archiveStatus);
                           await archiveCubit.insertArchive(archive: archive);
                         },
@@ -180,7 +188,7 @@ class _AddArchivePageState extends State<AddArchivePage> {
                           'Tambah Arsip',
                           style: TextStyle(
                             fontSize: 16,
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.w700,
                           ),
                         ),
                       );
@@ -193,5 +201,16 @@ class _AddArchivePageState extends State<AddArchivePage> {
         ),
       ),
     );
+  }
+
+  List<DropdownMenuItem<String>> _items() {
+    if (_selectedSubdistrict == null || _selectedSubdistrict!.isEmpty) {
+      return [];
+    }
+
+    return subdistrictsAndUrban[_selectedSubdistrict]!
+        .map((urban) =>
+            DropdownMenuItem<String>(value: urban, child: Text(urban)))
+        .toList();
   }
 }

@@ -18,12 +18,10 @@ class ReportPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool isAdmin = getIt
-            .get<s.SupabaseClient>()
-            .auth
-            .currentUser
-            ?.userMetadata?['is_admin'] ??
-        false;
+    final supabase = getIt.get<s.SupabaseClient>();
+    final userMetadata = supabase.auth.currentUser?.userMetadata;
+    final bool isAdmin = userMetadata?['is_admin'] ?? false;
+
     return isAdmin ? const _AdminPage() : const _UserPage();
   }
 }
@@ -184,8 +182,21 @@ class _AdminPage extends StatelessWidget {
   }
 }
 
-class _UserPage extends StatelessWidget {
+class _UserPage extends StatefulWidget {
   const _UserPage();
+
+  @override
+  State<_UserPage> createState() => _UserPageState();
+}
+
+class _UserPageState extends State<_UserPage> {
+  final _controller = TextEditingController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -207,23 +218,18 @@ class _UserPage extends StatelessWidget {
             if (state is GetArchiveLoansLoaded) {
               return Column(
                 children: [
-                  TextFormField(
-                    decoration: InputDecoration(
-                      hintText: 'Cari',
-                      prefixIcon: const Icon(Icons.search),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    child: TextField(
+                      onChanged: archiveCubit.searchArchiveLoans,
+                      controller: _controller,
+                      decoration: InputDecoration(
+                        hintText: 'Cari',
+                        prefixIcon: const Icon(Icons.search),
+                      ),
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  Expanded(
-                    child: ListView.separated(
-                      itemBuilder: (context, index) => ReturnArchiveItem(
-                          archiveLoan: state.archiveLoans[index]),
-                      separatorBuilder: (context, index) =>
-                          const SizedBox(height: 12),
-                      itemCount: state.archiveLoans.length,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                    ),
-                  ),
+                  Expanded(child: _buildArchiveLoanList()),
                 ],
               );
             }
@@ -231,6 +237,44 @@ class _UserPage extends StatelessWidget {
             return const SizedBox();
           },
         ),
+      ),
+    );
+  }
+
+  Widget _buildArchiveLoanList() {
+    final archiveCubit = context.read<ArchiveCubit>();
+    final authCubit = context.read<AuthCubit>();
+
+    if (_controller.text.isNotEmpty && archiveCubit.results.isEmpty) {
+      return const Center(
+        child: Text(
+          'Tidak ada hasil',
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+        ),
+      );
+    }
+
+    return RefreshIndicator(
+      onRefresh: () async => archiveCubit.getArchiveLoansByUser(
+          userId: '${authCubit.userProfile.id}'),
+      displacement: 10,
+      child: ListView.separated(
+        itemBuilder: (context, index) {
+          if (_controller.text.isEmpty) {
+            return ReturnArchiveItem(
+              archiveLoan: archiveCubit.archiveLoans[index],
+            );
+          }
+
+          return ReturnArchiveItem(
+            archiveLoan: archiveCubit.results[index],
+          );
+        },
+        separatorBuilder: (context, index) => const SizedBox(height: 12),
+        itemCount: _controller.text.isEmpty
+            ? archiveCubit.archiveLoans.length
+            : archiveCubit.results.length,
+        padding: const EdgeInsets.symmetric(vertical: 16),
       ),
     );
   }

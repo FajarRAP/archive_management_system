@@ -1,5 +1,3 @@
-import 'package:archive_management_system/features/archive/domain/usecases/download_archive_report_use_case.dart';
-import 'package:archive_management_system/features/archive/domain/usecases/get_archive_statistics_use_case.dart';
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 
@@ -7,8 +5,10 @@ import '../../domain/entities/archive_entity.dart';
 import '../../domain/entities/archive_loan_entity.dart';
 import '../../domain/usecases/borrow_archive_use_case.dart';
 import '../../domain/usecases/delete_archive_use_case.dart';
+import '../../domain/usecases/download_archive_report_use_case.dart';
 import '../../domain/usecases/get_archive_loans_by_user_use_case.dart';
 import '../../domain/usecases/get_archive_loans_use_case.dart';
+import '../../domain/usecases/get_archive_statistics_use_case.dart';
 import '../../domain/usecases/get_archives_use_case.dart';
 import '../../domain/usecases/insert_archive_use_case.dart';
 import '../../domain/usecases/return_borrowed_archive_use_case.dart';
@@ -41,13 +41,52 @@ class ArchiveCubit extends Cubit<ArchiveState> {
   final GetArchiveStatisticsUseCase getArchiveStatisticsUseCase;
   final DownloadArchiveReportUseCase downloadArchiveReportUseCase;
 
+  final archives = <ArchiveEntity>[];
+  var archiveLoans = <ArchiveLoanEntity>[];
+  var results = <ArchiveLoanEntity>[];
+  String? _selectedSubdistrict;
+  String? _selectedUrban;
+
+  String? get getSubdistrict => _selectedSubdistrict;
+  String? get getUrban => _selectedUrban;
+
+  void setSubdistrict(String selectedSubdistrict) {
+    if (selectedSubdistrict != _selectedSubdistrict) _selectedUrban = null;
+    _selectedSubdistrict = selectedSubdistrict;
+    emit(FilterArchiveBySubdistrict());
+  }
+
+  void setUrban(String selectedUrban) {
+    _selectedUrban = selectedUrban;
+    emit(FilterArchiveByUrban());
+  }
+
+  void resetFilter() {
+    _selectedSubdistrict = null;
+    _selectedUrban = null;
+    emit(GetArchiveLoaded());
+  }
+
+  void searchArchiveLoans(String keyword) {
+    results = archiveLoans
+        .where((archiveLoan) =>
+            '${archiveLoan.archive.archiveNumber}'.contains(keyword))
+        .toList();
+    emit(GetArchiveLoansLoaded());
+  }
+
   Future<void> getArchive() async {
     emit(GetArchiveLoading());
     final result = await getArchivesUseCase();
 
     result.fold(
       (l) => emit(GetArchiveError(message: l.message)),
-      (r) => emit(GetArchiveLoaded(r)),
+      (r) {
+        archives
+          ..clear()
+          ..addAll(r);
+        emit(GetArchiveLoaded());
+      },
     );
   }
 
@@ -102,7 +141,7 @@ class ArchiveCubit extends Cubit<ArchiveState> {
 
     result.fold(
       (l) => emit(GetArchiveLoansError(message: l.message)),
-      (r) => emit(GetArchiveLoansLoaded(r)),
+      (r) => emit(GetArchiveLoansLoaded()),
     );
   }
 
@@ -126,7 +165,12 @@ class ArchiveCubit extends Cubit<ArchiveState> {
 
     result.fold(
       (l) => emit(GetArchiveLoansError(message: l.message)),
-      (r) => emit(GetArchiveLoansLoaded(r)),
+      (r) {
+        archiveLoans
+          ..clear()
+          ..addAll(r);
+        emit(GetArchiveLoansLoaded());
+      },
     );
   }
 

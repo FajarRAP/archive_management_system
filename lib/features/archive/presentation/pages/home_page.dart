@@ -1,3 +1,4 @@
+import 'package:archive_management_system/features/archive/domain/entities/archive_entity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as s;
@@ -102,35 +103,67 @@ class _UserPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final archiveCubit = context.read<ArchiveCubit>();
+
     return BlocBuilder<ArchiveCubit, ArchiveState>(
-      bloc: context.read<ArchiveCubit>()..getArchive(),
+      bloc: archiveCubit..getArchive(),
       buildWhen: (previous, current) => current is GetArchive,
       builder: (context, state) {
         if (state is GetArchiveLoading) {
           return const Center(child: CircularProgressIndicator());
         }
 
-        if (state is GetArchiveLoaded) {
-          final availableArchives = state.archives
+        if (state is FilterArchiveByUrban) {
+          final filteredArchives = archiveCubit.archives
               .where((archive) => archive.status == availableStatus)
+              .where((archive) =>
+                  archive.subdistrict == archiveCubit.getSubdistrict)
+              .where((archive) => archive.urban == archiveCubit.getUrban)
               .toList();
+
           return RefreshIndicator(
-            onRefresh: context.read<ArchiveCubit>().getArchive,
+            onRefresh: archiveCubit.getArchive,
             displacement: 10,
             child: ListView(
               children: [
                 const ArchiveFilterSection(),
-                ListView.separated(
-                  itemBuilder: (context, index) =>
-                      ArchiveItem(archive: availableArchives[index]),
-                  separatorBuilder: (context, index) =>
-                      const SizedBox(height: 12),
-                  itemCount: availableArchives.length,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  physics: const NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                ),
+                _ArchiveList(archives: filteredArchives),
+              ],
+            ),
+          );
+        }
+
+        if (state is FilterArchiveBySubdistrict) {
+          final filteredArchives = archiveCubit.archives
+              .where((archive) => archive.status == availableStatus)
+              .where((archive) =>
+                  archive.subdistrict == archiveCubit.getSubdistrict)
+              .toList();
+
+          return RefreshIndicator(
+            onRefresh: archiveCubit.getArchive,
+            displacement: 10,
+            child: ListView(
+              children: [
+                const ArchiveFilterSection(),
+                _ArchiveList(archives: filteredArchives),
+              ],
+            ),
+          );
+        }
+
+        if (state is GetArchiveLoaded) {
+          final availableArchives = archiveCubit.archives
+              .where((archive) => archive.status == availableStatus)
+              .toList();
+
+          return RefreshIndicator(
+            onRefresh: archiveCubit.getArchive,
+            displacement: 10,
+            child: ListView(
+              children: [
+                const ArchiveFilterSection(),
+                _ArchiveList(archives: availableArchives),
               ],
             ),
           );
@@ -138,6 +171,27 @@ class _UserPage extends StatelessWidget {
 
         return const SizedBox();
       },
+    );
+  }
+}
+
+class _ArchiveList extends StatelessWidget {
+  const _ArchiveList({required this.archives});
+
+  final List<ArchiveEntity> archives;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.separated(
+      itemBuilder: (context, index) => ArchiveItem(archive: archives[index]),
+      separatorBuilder: (context, index) => const SizedBox(height: 12),
+      itemCount: archives.length,
+      padding: const EdgeInsets.symmetric(
+        horizontal: 16,
+        vertical: 8,
+      ),
+      physics: const NeverScrollableScrollPhysics(),
+      shrinkWrap: true,
     );
   }
 }

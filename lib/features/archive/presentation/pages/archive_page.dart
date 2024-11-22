@@ -11,34 +11,35 @@ class ArchivePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final archiveCubit = context.read<ArchiveCubit>();
     final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
       appBar: AppBar(title: const Text('Arsip')),
       body: BlocBuilder<ArchiveCubit, ArchiveState>(
-        bloc: context.read<ArchiveCubit>()..getArchive(),
+        bloc: archiveCubit..getArchive(),
         buildWhen: (previous, current) => current is GetArchive,
         builder: (context, state) {
           if (state is GetArchiveLoading) {
             return const Center(child: CircularProgressIndicator());
           }
-      
+
           if (state is GetArchiveLoaded) {
             return RefreshIndicator(
-              onRefresh: context.read<ArchiveCubit>().getArchive,
+              onRefresh: archiveCubit.getArchive,
               displacement: 10,
               child: ListView.separated(
                 itemBuilder: (context, index) =>
-                    ArchiveItem(archive: state.archives[index]),
+                    ArchiveItem(archive: archiveCubit.archives[index]),
                 separatorBuilder: (context, index) =>
                     const SizedBox(height: 12),
-                itemCount: state.archives.length,
+                itemCount: archiveCubit.archives.length,
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               ),
             );
           }
-      
+
           return const SizedBox();
         },
       ),
@@ -50,4 +51,3 @@ class ArchivePage extends StatelessWidget {
     );
   }
 }
-
