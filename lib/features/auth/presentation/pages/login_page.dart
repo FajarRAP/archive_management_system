@@ -47,6 +47,7 @@ class _LoginPageState extends State<LoginPage> {
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     controller: _emailController,
                     decoration: const InputDecoration(hintText: 'NIP/NIK'),
+                    keyboardType: TextInputType.emailAddress,
                     validator: validate,
                   ),
                   const SizedBox(height: 12),
@@ -63,6 +64,7 @@ class _LoginPageState extends State<LoginPage> {
                               : Icons.visibility_off_rounded),
                         ),
                       ),
+                      keyboardType: TextInputType.visiblePassword,
                       obscureText: _isObscure,
                       validator: validate,
                     );

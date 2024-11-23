@@ -4,8 +4,21 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../cubit/archive_cubit.dart';
 import '../widgets/return_archive_item.dart';
 
-class ReturnArchivePage extends StatelessWidget {
+class ReturnArchivePage extends StatefulWidget {
   const ReturnArchivePage({super.key});
+
+  @override
+  State<ReturnArchivePage> createState() => _ReturnArchivePageState();
+}
+
+class _ReturnArchivePageState extends State<ReturnArchivePage> {
+  final _controller = TextEditingController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +29,7 @@ class ReturnArchivePage extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: BlocBuilder<ArchiveCubit, ArchiveState>(
-          bloc: archiveCubit..getArchiveLoans(),
+          bloc: archiveCubit..getNotReturnedArchiveLoans(),
           buildWhen: (previous, current) => current is GetArchiveLoans,
           builder: (context, state) {
             if (state is GetArchiveLoansLoading) {
@@ -24,31 +37,21 @@ class ReturnArchivePage extends StatelessWidget {
             }
 
             if (state is GetArchiveLoansLoaded) {
-              final archiveLoans = archiveCubit.archiveLoans
-                  .where((archiveLoan) => archiveLoan.returnedAt == null)
-                  .toList();
-                  
               return RefreshIndicator(
-                onRefresh: archiveCubit.getArchiveLoans,
+                onRefresh: archiveCubit.getNotReturnedArchiveLoans,
                 displacement: 10,
                 child: Column(
                   children: [
-                    TextFormField(
+                    TextField(
+                      onChanged: archiveCubit.searchArchiveLoans,
+                      controller: _controller,
                       decoration: InputDecoration(
                         hintText: 'Cari',
                         prefixIcon: const Icon(Icons.search),
                       ),
                     ),
                     const SizedBox(height: 16),
-                    Expanded(
-                      child: ListView.separated(
-                        itemBuilder: (context, index) =>
-                            ReturnArchiveItem(archiveLoan: archiveLoans[index]),
-                        separatorBuilder: (context, index) =>
-                            const SizedBox(height: 12),
-                        itemCount: archiveLoans.length,
-                      ),
-                    ),
+                    Expanded(child: _buildArchiveLoanList()),
                   ],
                 ),
               );
@@ -58,6 +61,44 @@ class ReturnArchivePage extends StatelessWidget {
           },
         ),
       ),
+    );
+  }
+
+  Widget _buildArchiveLoanList() {
+    final archiveCubit = context.read<ArchiveCubit>();
+
+    if (archiveCubit.archiveLoans.isEmpty) {
+      return const Center(
+        child: Text(
+          'Belum ada peminjaman arsip',
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+        ),
+      );
+    }
+
+    if (_controller.text.isNotEmpty && archiveCubit.results.isEmpty) {
+      return const Center(
+        child: Text(
+          'Tidak ada hasil',
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+        ),
+      );
+    }
+
+    return ListView.separated(
+      itemBuilder: (context, index) {
+        if (_controller.text.isEmpty) {
+          return ReturnArchiveItem(
+              archiveLoan: archiveCubit.archiveLoans[index]);
+        }
+
+        return ReturnArchiveItem(archiveLoan: archiveCubit.results[index]);
+      },
+      separatorBuilder: (context, index) => const SizedBox(height: 12),
+      itemCount: _controller.text.isEmpty
+          ? archiveCubit.archiveLoans.length
+          : archiveCubit.results.length,
+      padding: const EdgeInsets.symmetric(vertical: 16),
     );
   }
 }

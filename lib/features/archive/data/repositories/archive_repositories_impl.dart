@@ -200,4 +200,18 @@ class ArchiveRepositoriesImpl extends ArchiveRepositories {
       return Left(Failure());
     }
   }
+
+  @override
+  Future<Either<Failure, List<ArchiveLoanEntity>>>
+      getNotReturnedArchiveLoans() async {
+    try {
+      final response =
+          await archiveRemoteDataSource.getNotReturnedArchiveLoans();
+      final datas = response.data as List;
+
+      return Right(datas.map(mapArchiveLoan).toList());
+    } catch (e) {
+      return Left(Failure());
+    }
+  }
 }

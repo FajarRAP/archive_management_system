@@ -55,8 +55,8 @@ class _AdminPage extends StatelessWidget {
                   return IconButton(
                     onPressed: () async {
                       await Permission.manageExternalStorage
-                          .onDeniedCallback(() async =>
-                              await Permission.manageExternalStorage.request())
+                          .onDeniedCallback(
+                              Permission.manageExternalStorage.request)
                           .request();
 
                       final List<ArchiveLoanEntity> archiveLoans =

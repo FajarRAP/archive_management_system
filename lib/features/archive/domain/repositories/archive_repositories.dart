@@ -19,4 +19,5 @@ abstract class ArchiveRepositories {
   Future<Either<Failure, Map<String, dynamic>>> getArchiveStatistics();
   Future<Either<Failure, String>> downloadArchiveReport(
       List<ArchiveLoanEntity> archiveLoans);
+  Future<Either<Failure, List<ArchiveLoanEntity>>> getNotReturnedArchiveLoans();
 }

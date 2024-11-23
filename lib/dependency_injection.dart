@@ -1,5 +1,3 @@
-import 'package:archive_management_system/features/archive/domain/usecases/download_archive_report_use_case.dart';
-import 'package:archive_management_system/features/archive/domain/usecases/get_archive_statistics_use_case.dart';
 import 'package:get_it/get_it.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -8,9 +6,12 @@ import 'features/archive/data/repositories/archive_repositories_impl.dart';
 import 'features/archive/domain/repositories/archive_repositories.dart';
 import 'features/archive/domain/usecases/borrow_archive_use_case.dart';
 import 'features/archive/domain/usecases/delete_archive_use_case.dart';
+import 'features/archive/domain/usecases/download_archive_report_use_case.dart';
 import 'features/archive/domain/usecases/get_archive_loans_by_user_use_case.dart';
 import 'features/archive/domain/usecases/get_archive_loans_use_case.dart';
+import 'features/archive/domain/usecases/get_archive_statistics_use_case.dart';
 import 'features/archive/domain/usecases/get_archives_use_case.dart';
+import 'features/archive/domain/usecases/get_not_returned_archive_loans_use_case.dart';
 import 'features/archive/domain/usecases/insert_archive_use_case.dart';
 import 'features/archive/domain/usecases/return_borrowed_archive_use_case.dart';
 import 'features/archive/domain/usecases/update_archive_use_case.dart';
@@ -67,6 +68,8 @@ void setup() {
           returnBorrowedArchiveUseCase:
               ReturnBorrowedArchiveUseCase(archiveRepositories: getIt.get()),
           downloadArchiveReportUseCase:
-              DownloadArchiveReportUseCase(archiveRepositories: getIt.get())),
+              DownloadArchiveReportUseCase(archiveRepositories: getIt.get()),
+          getNotReturnedArchiveLoansUseCase: GetNotReturnedArchiveLoansUseCase(
+              archiveRepositories: getIt.get())),
     );
 }

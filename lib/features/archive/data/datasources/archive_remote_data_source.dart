@@ -114,7 +114,8 @@ class ArchiveRemoteDataSourceImpl extends ArchiveRemoteDataSource {
   Future<PostgrestResponse> getNotReturnedArchiveLoans() async {
     return await supabase
         .from(archiveLoanTable)
-        .select()
+        .select(
+            'no_pinjam, archive:no_arsip(*), profile:profile_id(*), tanggal_pinjam, keterangan, created_at, returned_at')
         .isFilter('returned_at', null)
         .count(CountOption.exact);
   }

@@ -1,4 +1,4 @@
-import 'package:archive_management_system/features/auth/domain/entities/profile_entity.dart';
+import '../entities/profile_entity.dart';
 import 'package:dartz/dartz.dart';
 
 import '../../../../core/common/failure.dart';

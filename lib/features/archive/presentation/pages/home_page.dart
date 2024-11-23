@@ -1,4 +1,4 @@
-import 'package:archive_management_system/features/archive/domain/entities/archive_entity.dart';
+import '../../domain/entities/archive_entity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as s;

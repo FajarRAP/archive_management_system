@@ -1,4 +1,4 @@
-import 'package:archive_management_system/core/common/failure.dart';
+import 'failure.dart';
 import 'package:dartz/dartz.dart';
 
 abstract interface class AsyncUseCaseNoParams<ReturnType> {

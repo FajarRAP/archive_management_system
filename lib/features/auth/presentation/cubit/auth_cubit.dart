@@ -1,4 +1,4 @@
-import 'package:archive_management_system/features/auth/domain/entities/profile_entity.dart';
+import '../../domain/entities/profile_entity.dart';
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 

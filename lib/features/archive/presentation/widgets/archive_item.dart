@@ -20,6 +20,7 @@ class ArchiveItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final user = getIt.get<SupabaseClient>().auth.currentUser;
+    final bool isAdmin = user?.userMetadata?['is_admin'] ?? false;
 
     return Container(
       decoration: const BoxDecoration(
@@ -63,7 +64,7 @@ class ArchiveItem extends StatelessWidget {
                     ],
                   ),
                 ),
-                if (user?.userMetadata?['is_admin'] ?? false)
+                if (isAdmin)
                   IconButton(
                     icon: Icon(Icons.edit_rounded, color: colorScheme.primary),
                     style: IconButton.styleFrom(
@@ -91,7 +92,7 @@ class ArchiveItem extends StatelessWidget {
               value: archive.urban,
             ),
             const SizedBox(height: 12),
-            if (!(user?.userMetadata?['is_admin'] ?? true))
+            if (!isAdmin)
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [

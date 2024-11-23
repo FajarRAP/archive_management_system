@@ -1,5 +1,5 @@
-import 'package:archive_management_system/core/common/snack_bar.dart';
-import 'package:archive_management_system/features/archive/presentation/cubit/archive_cubit.dart';
+import '../../../../core/common/snack_bar.dart';
+import '../cubit/archive_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -53,7 +53,7 @@ class ReturnConfirmationDialog extends StatelessWidget {
 
                   if (state is ReturnBorrowedArchiveLoaded) {
                     context.pop();
-                    archiveCubit.getArchiveLoans();
+                    archiveCubit.getNotReturnedArchiveLoans();
                     showSnackBar(message: state.message);
                   }
                 },

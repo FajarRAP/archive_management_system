@@ -10,6 +10,7 @@ import '../../domain/usecases/get_archive_loans_by_user_use_case.dart';
 import '../../domain/usecases/get_archive_loans_use_case.dart';
 import '../../domain/usecases/get_archive_statistics_use_case.dart';
 import '../../domain/usecases/get_archives_use_case.dart';
+import '../../domain/usecases/get_not_returned_archive_loans_use_case.dart';
 import '../../domain/usecases/insert_archive_use_case.dart';
 import '../../domain/usecases/return_borrowed_archive_use_case.dart';
 import '../../domain/usecases/update_archive_use_case.dart';
@@ -28,6 +29,7 @@ class ArchiveCubit extends Cubit<ArchiveState> {
     required this.returnBorrowedArchiveUseCase,
     required this.getArchiveStatisticsUseCase,
     required this.downloadArchiveReportUseCase,
+    required this.getNotReturnedArchiveLoansUseCase,
   }) : super(ArchiveInitial());
 
   final GetArchivesUseCase getArchivesUseCase;
@@ -40,6 +42,7 @@ class ArchiveCubit extends Cubit<ArchiveState> {
   final ReturnBorrowedArchiveUseCase returnBorrowedArchiveUseCase;
   final GetArchiveStatisticsUseCase getArchiveStatisticsUseCase;
   final DownloadArchiveReportUseCase downloadArchiveReportUseCase;
+  final GetNotReturnedArchiveLoansUseCase getNotReturnedArchiveLoansUseCase;
 
   final archives = <ArchiveEntity>[];
   var archiveLoans = <ArchiveLoanEntity>[];
@@ -193,6 +196,19 @@ class ArchiveCubit extends Cubit<ArchiveState> {
     result.fold(
       (l) => emit(DownloadArchiveReportError(message: l.message)),
       (r) => emit(DownloadArchiveReportLoaded(message: r)),
+    );
+  }
+
+  Future<void> getNotReturnedArchiveLoans() async {
+    emit(GetArchiveLoansLoading());
+    final result = await getNotReturnedArchiveLoansUseCase();
+
+    result.fold(
+      (l) => emit(GetArchiveLoansError(message: l.message)),
+      (r) {
+        archiveLoans = r;
+        emit(GetArchiveLoansLoaded());
+      },
     );
   }
 }
